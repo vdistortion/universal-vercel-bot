@@ -87,17 +87,21 @@ async function forwardMessage(ctx: any) {
 }
 
 bot.on(message('text'), async (ctx: any) => {
-  if (ctx.message.text === keyboardButtons.advice.title) {
-    await getAdvice(ctx);
-  } else if (ctx.message.text === keyboardButtons.quote.title) {
-    await getQuote(ctx);
-  } else if (mapRand[ctx.message.text]) {
-    await getRand(ctx, mapRand[ctx.message.text]);
-  } else {
-    await ctx.reply(`${ctx.from.first_name}, не понимаю тебя!`, {
-      reply_to_message_id: ctx.message.message_id,
-    });
-    await ctx.reply('😈');
+  try {
+    if (ctx.message.text === keyboardButtons.advice.title) {
+      await getAdvice(ctx);
+    } else if (ctx.message.text === keyboardButtons.quote.title) {
+      await getQuote(ctx);
+    } else if (mapRand[ctx.message.text]) {
+      await getRand(ctx, mapRand[ctx.message.text]);
+    } else {
+      await ctx.reply(`${ctx.from.first_name}, не понимаю тебя!`, {
+        reply_to_message_id: ctx.message.message_id,
+      });
+      await ctx.reply('😈');
+    }
+  } catch (e) {
+    console.log(e);
   }
 });
 
