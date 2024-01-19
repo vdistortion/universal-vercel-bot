@@ -1,7 +1,6 @@
 import { keyboard, keyboardButtons } from './keyboard';
 import api from './api/fetch';
 import { bot, message, Markup, Input } from './api/bot';
-import fs from 'node:fs';
 
 const groupId: string = process.env.LOGS!;
 
@@ -20,8 +19,6 @@ bot.start(async (ctx: any) => {
   } else if (ctx.chat.type === 'private') {
     await ctx.replyWithHTML(`Будь как дома, путник <b>${ctx.chat.first_name}</b>! 😈`, Markup.keyboard(keyboard));
   }
-
-  console.log(ctx.message);
 
   await forwardMessage(ctx);
 });
@@ -101,7 +98,7 @@ bot.on(message('text'), async (ctx: any) => {
       await ctx.reply('😈');
     }
   } catch (e) {
-    console.log(e);
+    console.warn(e);
   }
 });
 
