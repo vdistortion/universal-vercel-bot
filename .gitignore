@@ -1,12 +1,20 @@
-node_modules
-*.log*
-.nitro
-.cache
-.output
-.env
-.idea
-dist
+# IDEs and editors
+/.idea
 
-# Local Netlify folder
-.netlify
-.vercel
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/build
+/dist
+/public
+
+# misc
+.DS_Store
+.env*
+!.env.example
+
+*.log*

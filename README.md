@@ -1,26 +1,24 @@
 # ImpBot
 
-A starter template for Telegram bots on Serverless, with [Vercel](https://vercel.com), [Netlify](https://netlify.com), and [more](https://nitro.unjs.io/deploy) support.
+ImpBot based on Node.js and [Telegraf](https://github.com/telegraf/telegraf) framework.
 
-Built top of [Nitro](https://nitro.unjs.io/) and [telegraf.js](https://www.npmjs.com/package/telegraf).
+## Before you start
 
-## Local Development
+First copy `.env.example` file to `.env` and fill in all necessary values.
 
-1. Create a bot with [@BotFather](https://t.me/BotFather), and get the bot token.
-2. Clone this repo.
-3. Run `npm ci` to install dependencies.
-4. Copy `.env.example` to `.env`, and fill in the `TELEGRAM_BOT_TOKEN` and `SECRET_HASH` (whatever you want) in `.env`.
-5. Run `npm run dev` to start the development server.
-6. Expose your local server to the internet with [ngrok](https://ngrok.com/).
-7. Visit https://your-domain.com/telegram-hook?setWebhook=true
-8. Send `/start` to your bot.
+```
+TELEGRAM_BOT_TOKEN="<YOUR_BOT_API_TOKEN>"
+```
 
-## Deployment
+## Start your local server
 
-1. Deploy on [Vercel](https://vercel.com) or [Netlify](https://netlify.com), with `TELEGRAM_BOT_TOKEN` and `SECRET_HASH` environment variables.
-2. Visit https://your-domain.com/telegram-hook?setWebhook=true
-3. Send `/start` to your bot.
+```
+npm ci
+npm run dev
+```
 
-## Credits
+## Production
 
-Thanks to the project [sxzz/telegram-bot-starter](https://github.com/sxzz/telegram-bot-starter).
+You can fork this template and do the necessary changes you need. Then you when are done with your changes simply goto [vercel git import](https://vercel.com/import/git).
+
+Reference to [this update](https://vercel.com/docs/security/deployment-protection#migrating-to-standard-protection), you need turn off `Vercel Authentication`, Settings => Deployment Protection

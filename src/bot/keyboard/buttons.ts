@@ -1,12 +1,12 @@
 type KeyboardButtonsItemType = {
-  id: string,
-  title: string,
+  id: string;
+  title: string;
 };
 
 type KeyboardButtonsType = {
-  advice: KeyboardButtonsItemType,
-  quote: KeyboardButtonsItemType,
-  rand: KeyboardButtonsItemType[],
+  advice: KeyboardButtonsItemType;
+  quote: KeyboardButtonsItemType;
+  rand: KeyboardButtonsItemType[];
 };
 
 export const keyboardButtons: KeyboardButtonsType = {
@@ -21,59 +21,59 @@ export const keyboardButtons: KeyboardButtonsType = {
   rand: [
     {
       id: '1',
-      title: 'Анекдот'
+      title: 'Анекдот',
     },
     {
       id: '11',
-      title: 'Анекдот (18+)'
+      title: 'Анекдот (18+)',
     },
     {
       id: '2',
-      title: 'Рассказы'
+      title: 'Рассказы',
     },
     {
       id: '12',
-      title: 'Рассказы (18+)'
+      title: 'Рассказы (18+)',
     },
     {
       id: '3',
-      title: 'Стишки'
+      title: 'Стишки',
     },
     {
       id: '13',
-      title: 'Стишки (18+)'
+      title: 'Стишки (18+)',
     },
     {
       id: '4',
-      title: 'Афоризмы'
+      title: 'Афоризмы',
     },
     {
       id: '14',
-      title: 'Афоризмы (18+)'
+      title: 'Афоризмы (18+)',
     },
     {
       id: '5',
-      title: 'Цитаты'
+      title: 'Цитаты',
     },
     {
       id: '15',
-      title: 'Цитаты (18+)'
+      title: 'Цитаты (18+)',
     },
     {
       id: '6',
-      title: 'Тосты'
+      title: 'Тосты',
     },
     {
       id: '16',
-      title: 'Тосты (18+)'
+      title: 'Тосты (18+)',
     },
     {
       id: '8',
-      title: 'Статусы'
+      title: 'Статусы',
     },
     {
       id: '18',
-      title: 'Статусы (18+)'
-    }
-  ]
+      title: 'Статусы (18+)',
+    },
+  ],
 };
