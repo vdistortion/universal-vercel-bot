@@ -2,7 +2,7 @@ import { keyboard, keyboardButtons } from './keyboard';
 import api from './api/fetch';
 import { bot, message, Markup, Input } from './api/bot';
 
-const groupId: string = process.env.LOGS!;
+const logsGroupId: string = process.env.LOGS_GROUP_ID!;
 
 type MapRandType = {
   [index: string]: string,
@@ -19,8 +19,6 @@ bot.start(async (ctx: any) => {
   } else if (ctx.chat.type === 'private') {
     await ctx.replyWithHTML(`Будь как дома, путник <b>${ctx.chat.first_name}</b>! 😈`, Markup.keyboard(keyboard));
   }
-
-  await forwardMessage(ctx);
 });
 
 bot.help((ctx) => ctx.replyWithHTML(`
@@ -68,13 +66,11 @@ ${wind}
   await ctx.replyWithHTML(text, {
     reply_to_message_id: ctx.message.message_id,
   });
-
-  await forwardMessage(ctx);
 });
 
 async function forwardMessage(ctx: any) {
-  if (ctx.chat.id !== Number(groupId)) {
-    await ctx.forwardMessage(groupId, {
+  if (logsGroupId && ctx.chat.id !== Number(logsGroupId)) {
+    await ctx.forwardMessage(logsGroupId, {
       from_chat_id: ctx.chat.id,
       message_id: ctx.message.message_id,
     });
