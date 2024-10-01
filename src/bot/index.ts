@@ -27,6 +27,8 @@ bot.command('cat', (ctx) => api.getCat().then((url) => ctx.replyWithPhoto(Input.
 
 bot.command('item', (ctx) => api.getList().then((text) => ctx.replyWithHTML(text)));
 
+bot.command('keyboard', (ctx) => ctx.reply('Держи клавиатуру ⌨️', Markup.keyboard(keyboard)));
+
 bot.on(message('sticker'), (ctx) => ctx.reply('👀'));
 
 bot.on(message('location'), async (ctx: any) => {
