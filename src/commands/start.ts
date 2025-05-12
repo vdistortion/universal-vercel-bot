@@ -4,7 +4,7 @@ import { keyboard } from '../keyboard';
 
 const debug = createDebug('bot:start_command');
 
-const start = () => async (ctx: Context) => {
+const start = (aliases: Record<string, string>) => async (ctx: Context) => {
   debug('Triggered "start" command');
 
   const keyboardMarkup = Markup.keyboard(keyboard);
@@ -13,7 +13,8 @@ const start = () => async (ctx: Context) => {
   if (ctx.chat?.type === 'supergroup') {
     message = `Привет, чат <b>${ctx.chat.title}</b>! 😈`;
   } else if (ctx.chat?.type === 'private') {
-    message = `Будь как дома, путник <b>${ctx.chat.first_name}</b>! 😈`;
+    const alias = aliases[ctx.chat.username as string] || ctx.chat.first_name;
+    message = `Будь как дома, путник <b>${alias}</b>! 😈`;
   }
 
   await ctx.replyWithHTML(message, keyboardMarkup);
