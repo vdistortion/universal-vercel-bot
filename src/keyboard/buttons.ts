@@ -1,12 +1,10 @@
-type KeyboardButtonsItemType = {
-  id: string;
-  title: string;
-};
-
-type KeyboardButtonsType = {
-  advice: KeyboardButtonsItemType;
-  quote: KeyboardButtonsItemType;
-};
+type KeyboardButtonsType = Record<
+  'advice' | 'quote',
+  {
+    id: string;
+    title: string;
+  }
+>;
 
 export const keyboardButtons: KeyboardButtonsType = {
   advice: {

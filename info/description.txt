@@ -8,14 +8,13 @@ About:
 
 Description:
 Список источников:
-https://thecatapi.com/
-https://forismatic.com/ru/
-https://fucking-great-advice.ru/
-https://openweathermap.org/
-Если отправить боту статичную геолокацию, он ответит погодой.
+https://thecatapi.com
+https://forismatic.com
+https://fucking-great-advice.ru
+https://openweathermap.org
+Если отправить боту геопозицию, он ответит погодой.
 
 Commands:
 start - Запуск/перезапуск бота
 cat - Запросить котика
-item - Что-то непонятное
 help - Список возможных команд

@@ -1,8 +1,8 @@
-import { Context, Telegraf } from 'telegraf';
-import { Update } from 'telegraf/typings/core/types/typegram';
+import { type Context, Telegraf } from 'telegraf';
+import { type Update } from 'telegraf/typings/core/types/typegram';
 import createDebug from 'debug';
 
-const debug = createDebug('bot:dev');
+const debug = createDebug('bot:development');
 
 const development = async (bot: Telegraf<Context<Update>>) => {
   const botInfo = (await bot.telegram.getMe()).username;

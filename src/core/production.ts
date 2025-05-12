@@ -1,9 +1,9 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import createDebug from 'debug';
-import { Context, Telegraf } from 'telegraf';
-import { Update } from 'telegraf/typings/core/types/typegram';
+import { type Context, Telegraf } from 'telegraf';
+import { type Update } from 'telegraf/typings/core/types/typegram';
 
-const debug = createDebug('bot:dev');
+const debug = createDebug('bot:production');
 
 const PORT = (process.env.PORT && parseInt(process.env.PORT, 10)) || 3000;
 const VERCEL_URL = `${process.env.VERCEL_URL}`;
@@ -21,7 +21,7 @@ const production = async (
   }
 
   const getWebhookInfo = await bot.telegram.getWebhookInfo();
-  if (getWebhookInfo.url !== VERCEL_URL + '/api') {
+  if (getWebhookInfo.url !== `${VERCEL_URL}/api`) {
     debug(`deleting webhook ${VERCEL_URL}`);
     await bot.telegram.deleteWebhook();
     debug(`setting webhook: ${VERCEL_URL}/api`);
@@ -35,4 +35,5 @@ const production = async (
   }
   debug(`starting webhook on port: ${PORT}`);
 };
+
 export { production };

@@ -1,21 +1,33 @@
-import { Context } from 'telegraf';
+import type { Context } from 'telegraf';
+import type { Update } from 'telegraf/typings/core/types/typegram';
 import createDebug from 'debug';
+import { getAdvice, getQuote } from '../api/fetch';
+import { keyboardButtons } from '../keyboard';
 
 const debug = createDebug('bot:greeting_text');
 
 const replyToMessage = (ctx: Context, messageId: number, string: string) =>
-  ctx.reply(string, {
+  ctx.replyWithHTML(string, {
     reply_parameters: { message_id: messageId },
   });
 
-const greeting = () => async (ctx: Context) => {
+const greeting = () => async (ctx: Context<Update>) => {
   debug('Triggered "greeting" text command');
 
   const messageId = ctx.message?.message_id;
-  const userName = `${ctx.message?.from.first_name} ${ctx.message?.from.last_name}`;
+  let message = '';
 
   if (messageId) {
-    await replyToMessage(ctx, messageId, `Hello, ${userName}!`);
+    // @ts-ignore
+    if (ctx.message.text === keyboardButtons.advice.title) {
+      message = await getAdvice();
+      // @ts-ignore
+    } else if (ctx.message.text === keyboardButtons.quote.title) {
+      message = await getQuote();
+    } else {
+      message = `${ctx.from?.first_name}, не понимаю тебя! 😈`;
+    }
+    await replyToMessage(ctx, messageId, message);
   }
 };
 
