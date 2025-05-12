@@ -6,16 +6,17 @@ const debug = createDebug('bot:start_command');
 
 const start = () => async (ctx: Context) => {
   debug('Triggered "start" command');
+
   const keyboardMarkup = Markup.keyboard(keyboard);
+  let message = 'Держи клавиатуру! 😈';
 
   if (ctx.chat?.type === 'supergroup') {
-    await ctx.replyWithHTML(`Привет, чат <b>${ctx.chat.title}</b>! 😈`, keyboardMarkup);
+    message = `Привет, чат <b>${ctx.chat.title}</b>! 😈`;
   } else if (ctx.chat?.type === 'private') {
-    await ctx.replyWithHTML(
-      `Будь как дома, путник <b>${ctx.chat.first_name}</b>! 😈`,
-      keyboardMarkup,
-    );
+    message = `Будь как дома, путник <b>${ctx.chat.first_name}</b>! 😈`;
   }
+
+  await ctx.replyWithHTML(message, keyboardMarkup);
 };
 
 export { start };

@@ -27,6 +27,7 @@ const greeting = () => async (ctx: Context<Update>) => {
     } else {
       message = `${ctx.from?.first_name}, не понимаю тебя! 😈`;
     }
+
     await replyToMessage(ctx, messageId, message);
   }
 };

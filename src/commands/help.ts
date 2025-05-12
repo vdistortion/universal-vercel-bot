@@ -5,11 +5,11 @@ const debug = createDebug('bot:help_command');
 
 const help = () => async (ctx: Context) => {
   debug('Triggered "help" command');
-  await ctx.replyWithHTML(`
+  await ctx.reply(`
 /start — Запуск/перезапуск бота
 /cat — Запросить котика
 /help — Список возможных команд
-Если отправить боту статичную геолокацию, он ответит погодой
+Если отправить боту геопозицию, он ответит погодой
 `);
 };
 

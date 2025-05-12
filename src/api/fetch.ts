@@ -44,7 +44,7 @@ export async function getAdvice() {
 }
 
 export async function getWeather(apiKey: string, latitude: number, longitude: number) {
-  interface AnswerType {
+  interface IApiData {
     name: string;
     wind: {
       speed: number;
@@ -57,7 +57,7 @@ export async function getWeather(apiKey: string, latitude: number, longitude: nu
     };
   }
 
-  return await HttpClient<AnswerType>(
+  return await HttpClient<IApiData>(
     `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=ru`,
   );
 }
