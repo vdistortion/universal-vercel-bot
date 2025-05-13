@@ -14,8 +14,10 @@ https://forismatic.com
 https://fucking-great-advice.ru
 https://openweathermap.org
 Если отправить боту геопозицию, он ответит погодой
+Исходный код: https://github.com/vdistortion/imp-telegram-bot
 
 Commands:
 start - Запуск/перезапуск бота
 cat - Запросить котика
+flagConnect - флаги
 help - Список возможных команд
