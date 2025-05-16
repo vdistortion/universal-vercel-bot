@@ -1,17 +1,8 @@
 {
-  "version": 2,
-  "public": true,
   "functions": {
-    "src/index.ts": {
+    "api/index.ts": {
       "memory": 1024,
       "maxDuration": 10
     }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "api/index.ts"
-    }
-  ],
-  "redirects": [{ "source": "/", "destination": "/api", "permanent": false }]
+  }
 }
