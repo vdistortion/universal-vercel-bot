@@ -5,7 +5,7 @@ import { development, production } from './core';
 import { start, help, flagConnect } from './commands';
 import { greeting, location } from './text';
 import { getCat, getList } from './api/fetch';
-import { getKeyboard } from './keyboard';
+import { getKeyboard, buttons } from './keyboard';
 import { reply, replyWithPhoto } from './utils/reply';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
@@ -18,8 +18,8 @@ const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
 
 bot.command('start', start(JSON.parse(ALIASES)));
 bot.command('help', help());
-bot.command('flag_connect', flagConnect(IMAGE_SRC));
-bot.command('cat', (ctx) => getCat().then((url) => replyWithPhoto(ctx, url)));
+bot.command(buttons.flags.command, flagConnect(IMAGE_SRC));
+bot.command(buttons.cat.command, (ctx) => getCat().then((url) => replyWithPhoto(ctx, url)));
 bot.command('item', (ctx) => getList().then((text) => reply(ctx, text, { parseMode: 'HTML' })));
 bot.command('advice', (ctx) => reply(ctx, '😈', { keyboard: getKeyboard(true) }));
 

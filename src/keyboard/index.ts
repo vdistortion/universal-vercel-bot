@@ -1,1 +1,1 @@
-export { getKeyboard, ButtonTypes } from './buttons';
+export { getKeyboard, buttons } from './buttons';
