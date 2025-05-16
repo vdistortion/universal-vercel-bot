@@ -11,6 +11,7 @@ export const production = async (bot: Bot) => {
   debug(`setting webhook: ${VERCEL_URL}`);
 
   const getWebhookInfo = await bot.api.getWebhookInfo();
+  console.log({ getWebhookInfo, VERCEL_URL });
 
   if (getWebhookInfo.url !== `${VERCEL_URL}/api`) {
     debug(`deleting webhook ${VERCEL_URL}`);
