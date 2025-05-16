@@ -1,6 +1,12 @@
 {
   "version": 2,
   "public": true,
+  "functions": {
+    "api/index.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",
