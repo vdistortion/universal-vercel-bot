@@ -29,8 +29,8 @@
     <script>
       document.querySelector('button').addEventListener('click', async () => {
         const res = await fetch('/api/set-webhook');
-        const text = await res.text();
-        alert(text);
+        const { message } = await res.text();
+        location.href = message;
       });
     </script>
   </body>
