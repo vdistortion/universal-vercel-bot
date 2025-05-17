@@ -6,7 +6,7 @@ import { getCat, getList } from './api/fetch';
 import { getKeyboard, buttons } from './keyboard';
 import { reply, replyWithPhoto } from './utils/reply';
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
+export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const API_KEY_OPENWEATHERMAP = process.env.API_KEY_OPENWEATHERMAP!;
 const ALIASES = process.env.ALIASES!;
 const IMAGE_SRC = process.env.IMAGE_SRC!;
