@@ -9,8 +9,11 @@ if (!TELEGRAM_BOT_TOKEN || !VERCEL_URL) {
 
 const bot = new Bot(TELEGRAM_BOT_TOKEN);
 const webhookUrl = `https://${VERCEL_URL}/api`;
+console.log({ webhookUrl, TELEGRAM_BOT_TOKEN });
 
-bot.api
-  .setWebhook(webhookUrl)
-  .then(() => console.log(`Webhook установлен на ${webhookUrl}`))
-  .catch(console.error);
+export default async function handler() {
+  await bot.api
+    .setWebhook(webhookUrl)
+    .then(() => new Response(`Webhook установлен на ${webhookUrl}`))
+    .catch(console.error);
+}
