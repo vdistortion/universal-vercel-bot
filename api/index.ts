@@ -6,7 +6,7 @@ import { production } from '../src/core';
 export default async function handle(req: VercelRequest, res: VercelResponse) {
   try {
     await production(req, res, bot);
-    webhookCallback(bot, 'https')(req, res);
+    webhookCallback(bot, 'http')(req, res);
   } catch (e: any) {
     res.statusCode = 500;
     res.setHeader('Content-Type', 'text/html');
