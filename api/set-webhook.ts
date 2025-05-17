@@ -1,19 +1,18 @@
 import { Bot } from 'grammy';
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const VERCEL_URL = process.env.VERCEL_URL;
-
-if (!TELEGRAM_BOT_TOKEN || !VERCEL_URL) {
-  throw new Error('TELEGRAM_BOT_TOKEN или VERCEL_URL не установлены');
-}
-
-const bot = new Bot(TELEGRAM_BOT_TOKEN);
-const webhookUrl = `https://${VERCEL_URL}/api`;
+const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN!);
 
 export default async function handler() {
-  await bot.api
-    .setWebhook(webhookUrl)
-    .then(() => new Response(`Webhook установлен на ${webhookUrl}`))
-    .catch(console.error)
-    .finally(() => console.log({ webhookUrl, TELEGRAM_BOT_TOKEN }));
+  if (!VERCEL_URL) return new Response('Unauthorized', { status: 401 });
+
+  const webhookUrl = `https://${VERCEL_URL}/api`;
+
+  try {
+    await bot.api.setWebhook(webhookUrl);
+    return new Response(`Webhook установлен: ${webhookUrl}`);
+  } catch (err) {
+    console.error('Ошибка при установке webhook:', err);
+    return new Response('Ошибка при установке webhook', { status: 500 });
+  }
 }
