@@ -11,6 +11,5 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["api"],
   "exclude": ["node_modules"]
 }

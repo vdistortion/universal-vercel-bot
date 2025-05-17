@@ -5,7 +5,7 @@ import { bot, startVercel } from '../src';
 export default async function handle(req: VercelRequest, res: VercelResponse) {
   try {
     await startVercel(req, res);
-    return webhookCallback(bot, 'std/http');
+    return webhookCallback(bot, 'https');
   } catch (e: any) {
     res.statusCode = 500;
     res.setHeader('Content-Type', 'text/html');

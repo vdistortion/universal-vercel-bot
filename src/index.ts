@@ -27,8 +27,8 @@ bot.on('message:sticker', (ctx) => reply(ctx, '👀'));
 bot.on('message:text', greeting());
 
 //prod mode (Vercel)
-export const startVercel = async (req: VercelRequest, res: VercelResponse) => {
-  await production(req, res, bot);
+export const startVercel = (req: VercelRequest, res: VercelResponse) => {
+  return production(req, res, bot);
 };
 
 //dev mode
