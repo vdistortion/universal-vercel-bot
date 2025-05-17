@@ -3,7 +3,7 @@ import createDebug from 'debug';
 
 const debug = createDebug('bot:development');
 
-const development = async (bot: Bot) => {
+export const development = async (bot: Bot) => {
   const { username } = await bot.api.getMe();
 
   debug('Bot runs in development mode');
@@ -16,5 +16,3 @@ const development = async (bot: Bot) => {
   process.once('SIGINT', () => bot.stop());
   process.once('SIGTERM', () => bot.stop());
 };
-
-export { development };
