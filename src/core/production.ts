@@ -1,13 +1,11 @@
-import { Bot } from 'grammy';
-import type { Update } from '@grammyjs/types';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import createDebug from 'debug';
+import { bot } from '../';
 
 const debug = createDebug('bot:production');
 const VERCEL_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
-export const production = async (req: VercelRequest, res: VercelResponse, bot: Bot) => {
-  if (!VERCEL_URL) throw new Error('VERCEL_URL is not set.');
+export const production = async () => {
+  if (!VERCEL_URL) throw new Error('VERCEL_PROJECT_PRODUCTION_URL is not set.');
   const webhookUrl = `https://${VERCEL_URL}/api/index`;
 
   debug('Bot runs in production mode');
@@ -20,10 +18,4 @@ export const production = async (req: VercelRequest, res: VercelResponse, bot: B
     debug(`setting webhook: ${webhookUrl}`);
     await bot.api.setWebhook(webhookUrl);
   }
-
-  // if (req.method === 'POST') {
-  //   await bot.handleUpdate(req.body as Update);
-  // } else {
-  //   res.status(200).json('Listening to bot events...');
-  // }
 };
