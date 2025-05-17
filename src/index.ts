@@ -28,6 +28,7 @@ bot.on('message:text', greeting());
 
 //prod mode (Vercel)
 export const startVercel = (req: VercelRequest, res: VercelResponse) => {
+  console.log('Start startVercel...');
   return production(req, res, bot);
 };
 
