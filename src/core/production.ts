@@ -4,16 +4,13 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import createDebug from 'debug';
 
 const debug = createDebug('bot:production');
-
-const VERCEL_URL = `${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+const VERCEL_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
 export const production = async (req: VercelRequest, res: VercelResponse, bot: Bot) => {
+  if (!VERCEL_URL) throw new Error('VERCEL_URL is not set.');
+
   debug('Bot runs in production mode');
   debug(`setting webhook: ${VERCEL_URL}`);
-
-  if (!VERCEL_URL) {
-    throw new Error('VERCEL_URL is not set.');
-  }
 
   const getWebhookInfo = await bot.api.getWebhookInfo();
   if (getWebhookInfo.url !== VERCEL_URL + '/api') {
