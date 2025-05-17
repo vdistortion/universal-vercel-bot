@@ -1,17 +1,13 @@
-import {Bot} from 'grammy';
-import {Update} from '@grammyjs/types';
+import { Bot } from 'grammy';
+import type { Update } from '@grammyjs/types';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import createDebug from 'debug';
 
-const debug = createDebug('bot:dev');
+const debug = createDebug('bot:production');
 
 const VERCEL_URL = `${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
 
-export const production = async (
-  req: VercelRequest,
-  res: VercelResponse,
-  bot: Bot,
-) => {
+export const production = async (req: VercelRequest, res: VercelResponse, bot: Bot) => {
   debug('Bot runs in production mode');
   debug(`setting webhook: ${VERCEL_URL}`);
 
