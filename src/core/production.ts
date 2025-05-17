@@ -23,6 +23,6 @@ export const production = async (req: VercelRequest, res: VercelResponse, bot: B
   if (req.method === 'POST') {
     await bot.handleUpdate(req.body as Update);
   } else {
-    res.status(200).json('Listening to bot events...');
+    res.status(200).json(`Listening to bot events... ${VERCEL_URL}`);
   }
 };
