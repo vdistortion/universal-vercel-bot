@@ -2,10 +2,9 @@ import { Bot } from 'grammy';
 import createDebug from 'debug';
 
 const debug = createDebug('bot:production');
-const VERCEL_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
-export const production = async (bot: Bot) => {
-  if (!VERCEL_URL) throw new Error('VERCEL_PROJECT_PRODUCTION_URL is not set.');
+export const production = async (bot: Bot, VERCEL_URL?: string) => {
+  if (!VERCEL_URL) throw new Error('VERCEL_URL is not set.');
   const webhookUrl = `https://${VERCEL_URL}/api/index`;
   const getWebhookInfo = await bot.api.getWebhookInfo();
 
