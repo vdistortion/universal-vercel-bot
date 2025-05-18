@@ -14,6 +14,7 @@ const help = () => async (ctx: Context) => {
 /${buttons.cat.command} — ${buttons.cat.description}
 /${buttons.quote.command} — ${buttons.quote.description}
 /help — Список возможных команд
+/stop — Убрать клавиатуру
 Если отправить боту геопозицию, он ответит погодой
 `,
   );
