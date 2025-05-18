@@ -7,13 +7,13 @@ import { getCat, getList, getQuote } from './api/fetch';
 import { getKeyboard, buttons } from './keyboard';
 import { reply, replyWithPhoto } from './utils/reply';
 
-const { TELEGRAM_BOT_TOKEN, OPENWEATHERMAP_API_KEY, ALIASES, IMAGE_SRC, NODE_ENV } = process.env;
+const { TELEGRAM_BOT_TOKEN, OPENWEATHERMAP_API_KEY, ALIASES, FLAG_CONNECT, NODE_ENV } = process.env;
 
 export const bot = new Bot(TELEGRAM_BOT_TOKEN!);
 
 bot.command('start', start(JSON.parse(ALIASES!)));
 bot.command('help', help());
-bot.command(buttons.flags.command, flagConnect(IMAGE_SRC!));
+bot.command(buttons.flags.command, flagConnect(FLAG_CONNECT!));
 bot.command(buttons.cat.command, (ctx) => getCat().then((url) => replyWithPhoto(ctx, url)));
 bot.command('item', (ctx) => getList().then((text) => reply(ctx, text, { parseMode: 'HTML' })));
 bot.command(buttons.quote.command, (ctx) =>

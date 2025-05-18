@@ -1,15 +1,16 @@
 import type { Context } from 'grammy';
 import createDebug from 'debug';
 import { reply, replyWithPhoto } from '../utils/reply';
-import countries from '../countries.json';
+import { getCountries } from '../api/fetch';
 
 const debug = createDebug('bot:flag_connect_command');
 
 const flagConnect = (path: string) => async (ctx: Context) => {
+  const countries = await getCountries(path);
   const message = countries[0].name.ru;
   debug(`Triggered "flag_connect" command with message \n${message}`);
   await reply(ctx, message);
-  await replyWithPhoto(ctx, path + countries[0].flag[0]);
+  await replyWithPhoto(ctx, path + '/images/flags/' + countries[0].flag[0]);
 };
 
 export { flagConnect };

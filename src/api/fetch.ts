@@ -61,3 +61,15 @@ export async function getWeather(apiKey: string, latitude: number, longitude: nu
     `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=ru`,
   );
 }
+
+export async function getCountries(path: string) {
+  interface ICountry {
+    name: {
+      en: string;
+      ru: string;
+    };
+    flag: string[];
+  }
+
+  return await HttpClient<ICountry[]>(`${path}/countries.json`);
+}
