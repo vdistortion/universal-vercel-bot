@@ -9,6 +9,7 @@ export const reply = (
     messageId?: number;
     parseMode?: ParseMode;
     keyboard?: KeyboardButton[][];
+    removeKeyboard?: boolean;
   },
 ) => {
   return ctx.reply(text, {
@@ -20,6 +21,11 @@ export const reply = (
       reply_markup: {
         keyboard: options.keyboard,
         resize_keyboard: true,
+      },
+    }),
+    ...(options?.removeKeyboard && {
+      reply_markup: {
+        remove_keyboard: options.removeKeyboard,
       },
     }),
   });
