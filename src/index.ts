@@ -9,7 +9,7 @@ import { reply, replyWithPhoto } from './utils/reply';
 
 const { TELEGRAM_BOT_TOKEN, OPENWEATHERMAP_API_KEY, ALIASES, IMAGE_SRC, NODE_ENV } = process.env;
 
-const bot = new Bot(TELEGRAM_BOT_TOKEN!);
+export const bot = new Bot(TELEGRAM_BOT_TOKEN!);
 
 bot.command('start', start(JSON.parse(ALIASES!)));
 bot.command('help', help());

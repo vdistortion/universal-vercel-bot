@@ -23,7 +23,7 @@ You can fork this template and do the necessary changes you need. Then you when 
 
 Import the `.env` file in the settings: `Settings => Environment Variables`.
 
-To set the webhook, go to `https://YOUR_DOMAIN.vercel.app/`.
+The webhook is usually set automatically. If not, open the following URL to trigger manual setup: `https://YOUR_DOMAIN.vercel.app/`.
 
 ## Links
 
