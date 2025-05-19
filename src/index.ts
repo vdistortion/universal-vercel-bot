@@ -15,9 +15,9 @@ bot.command('start', start(JSON.parse(ALIASES!)));
 bot.command('help', help());
 bot.command(buttons.flags.command, flagConnect(FLAG_CONNECT!));
 bot.command(buttons.cat.command, (ctx) => getCat().then((url) => replyWithPhoto(ctx, url)));
-bot.command('item', (ctx) => getList().then((text) => reply(ctx, text, { parseMode: 'HTML' })));
+bot.command('item', (ctx) => getList().then((text) => reply(ctx, text, { parseMode: 'Markdown' })));
 bot.command(buttons.quote.command, (ctx) =>
-  getQuote().then((text) => reply(ctx, text, { parseMode: 'HTML' })),
+  getQuote().then((text) => reply(ctx, text, { parseMode: 'Markdown' })),
 );
 bot.command(buttons.advice.command, (ctx) => reply(ctx, '😈', { keyboard: getKeyboard(true) }));
 bot.command('stop', (ctx) => reply(ctx, 'Stopped', { removeKeyboard: true }));

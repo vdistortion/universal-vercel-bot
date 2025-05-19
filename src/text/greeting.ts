@@ -6,7 +6,7 @@ import { reply, replyWithPhoto } from '../utils/reply';
 
 const debug = createDebug('bot:greeting_text');
 
-const greeting = () => async (ctx: Filter<Context, 'message'>) => {
+export const greeting = () => async (ctx: Filter<Context, 'message'>) => {
   debug('Triggered "greeting" text command');
 
   let message = '';
@@ -24,7 +24,5 @@ const greeting = () => async (ctx: Filter<Context, 'message'>) => {
     message = `${ctx.from.first_name}, не понимаю тебя! 😈`;
   }
 
-  await reply(ctx, message, { messageId: ctx.message.message_id, parseMode: 'HTML' });
+  await reply(ctx, message, { messageId: ctx.message.message_id, parseMode: 'Markdown' });
 };
-
-export { greeting };

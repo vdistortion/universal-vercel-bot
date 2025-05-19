@@ -3,7 +3,7 @@ import { list } from './list';
 async function HttpClient<T, P = null>(url: string, params?: P): Promise<T> {
   const search = params ? '?' + new URLSearchParams(params).toString() : '';
   const response = await fetch(url + search);
-  return (await response.json()) as T;
+  return response.json();
 }
 
 export function getApiList() {
@@ -85,11 +85,7 @@ export function getApiAdvice() {
  *
  * API: https://openweathermap.org/current
  */
-export async function getApiWeather(
-  apiKey: string,
-  latitude: number,
-  longitude: number,
-) {
+export async function getApiWeather(apiKey: string, latitude: number, longitude: number) {
   interface IApiData {
     name: string;
     wind: {

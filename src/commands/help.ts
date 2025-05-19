@@ -5,7 +5,7 @@ import { reply } from '../utils/reply';
 
 const debug = createDebug('bot:help_command');
 
-const help = () => async (ctx: Context) => {
+export const help = () => async (ctx: Context) => {
   debug('Triggered "help" command');
   await reply(
     ctx,
@@ -19,5 +19,3 @@ const help = () => async (ctx: Context) => {
 `,
   );
 };
-
-export { help };

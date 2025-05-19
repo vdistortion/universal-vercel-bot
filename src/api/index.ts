@@ -9,7 +9,7 @@ import {
 
 export async function getList() {
   const { text, number, length } = await getApiList();
-  return `${text}\n\n<b>[${number}/${length}]</b>`;
+  return `${text}\n\n*[${number}/${length}]*`;
 }
 
 export async function getCat() {
@@ -19,7 +19,7 @@ export async function getCat() {
 
 export async function getQuote() {
   const { quoteText, quoteAuthor } = await getApiQuote();
-  return quoteAuthor ? `${quoteText}\n<b>${quoteAuthor}</b>` : quoteText;
+  return quoteAuthor ? `${quoteText}\n\n*${quoteAuthor}*` : quoteText;
 }
 
 export async function getAdvice() {
@@ -29,15 +29,25 @@ export async function getAdvice() {
 
 export async function getWeather(apiKey: string, latitude: number, longitude: number) {
   const answer = await getApiWeather(apiKey, latitude, longitude);
-  const wind = answer.wind.speed > 0 ? `<i>Ветер</i> ${answer.wind.speed} м/с` : 'Штиль';
+  const getTempEmoji = (temp: number) => {
+    if (temp <= -10) return '🥶';
+    if (temp <= 0) return '❄️';
+    if (temp <= 15) return '🌥️';
+    if (temp <= 25) return '🌤️';
+    return '🔥';
+  };
+  const tempIcon = getTempEmoji(answer.main.temp);
+  const wind = answer.wind.speed > 0 ? `💨 _Ветер_: ${answer.wind.speed} м/с` : '🟦 _Штиль_';
+
   return `
-<b>${answer.name}</b>
-<i>Температура</i> ${answer.main.temp} ℃
-<i>По ощущению</i> ${answer.main.feels_like} ℃
-<i>Влажность</i> ${answer.main.humidity}%
-<i>Давление</i> ${answer.main.pressure} мм рт. ст.
+🌍 *${answer.name}*
+
+${tempIcon} _Температура_: ${answer.main.temp} ℃
+🤔 _Ощущается как_: ${answer.main.feels_like} ℃
+💧 _Влажность_: ${answer.main.humidity}%
+📈 _Давление_: ${answer.main.pressure} мм рт. ст.
 ${wind}
-  `;
+`;
 }
 
 export function getCountries(path: string) {
