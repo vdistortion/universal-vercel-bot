@@ -1,7 +1,19 @@
 import { Bot, GrammyError, HttpError, webhookCallback } from 'grammy';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { commands, development, production } from './core';
-import { start, stop, cat, item, quote, advice, help, flagConnect, imp, image } from './commands';
+import {
+  advice,
+  cat,
+  flagConnect,
+  help,
+  id,
+  image,
+  imp,
+  item,
+  quote,
+  start,
+  stop,
+} from './commands';
 import { greeting, location, sticker } from './text';
 import {
   ALIASES,
@@ -24,6 +36,7 @@ bot.command(commands.flags.command, flagConnect(FLAG_CONNECT!));
 bot.command(commands.cat.command, cat());
 bot.command(commands.quote.command, quote());
 bot.command(commands.advice.command, advice());
+bot.command('id', id());
 bot.command('imp', imp());
 
 bot.on('message:location', location(OPENWEATHERMAP_API_KEY!));

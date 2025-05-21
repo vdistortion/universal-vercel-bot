@@ -4,6 +4,7 @@ export { help } from './help';
 export { item } from './item';
 export { image } from './image';
 export { imp } from './imp';
+export { id } from './id';
 export { cat } from './cat';
 export { quote } from './quote';
 export { advice } from './advice';
