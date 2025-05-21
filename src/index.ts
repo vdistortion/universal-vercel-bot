@@ -45,16 +45,19 @@ bot.on('callback_query:data', async (ctx) => {
     await ctx.editMessageCaption({
       caption: answer,
       reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: '🌐 Открыть сайт',
-              web_app: {
-                url: 'https://zvalentin.ru/flag-connect/',
-              },
-            },
-          ],
-        ],
+        inline_keyboard:
+          ctx.chat?.type === 'private'
+            ? [
+                [
+                  {
+                    text: '🌐 Открыть сайт',
+                    web_app: {
+                      url: FLAG_CONNECT!,
+                    },
+                  },
+                ],
+              ]
+            : [],
       },
     });
   }
