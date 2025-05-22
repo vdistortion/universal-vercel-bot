@@ -5,7 +5,7 @@ import { FLAG_CONNECT } from '../utils/env';
 import { http } from '../utils/http';
 import { pickRandom } from '../utils/pickRandom';
 import { chunk } from '../utils/chunkArray';
-import { replyWithPhoto } from '../utils/reply';
+import { reply, replyWithPhoto } from '../utils/reply';
 
 interface ICountry {
   name: {
@@ -17,6 +17,7 @@ interface ICountry {
 
 const url = FLAG_CONNECT!;
 let countries: ICountry[] = [];
+let count = 4;
 
 async function getApiCountries() {
   if (!countries.length) countries = await http<ICountry[]>(`${url}/countries.json`);
@@ -27,7 +28,6 @@ export async function handlerFlagConnect(ctx: Context) {
   const apiCountries = await getApiCountries();
   const list: [number, ICountry][] = [];
   const indexes: number[] = [];
-  const count = 4;
 
   while (indexes.length < count) {
     const index = pickRandom(apiCountries);
@@ -76,7 +76,12 @@ export function runFlagsService(bot: Bot) {
     await ctx.editMessageCaption({
       caption: answer,
       reply_markup: {
-        inline_keyboard: [[{ text: 'Продолжить', callback_data: 'flag_more' }]],
+        inline_keyboard: [
+          [
+            { text: '⚙️', callback_data: 'flag_settings' },
+            { text: 'Продолжить', callback_data: 'flag_more' },
+          ],
+        ],
       },
     });
 
@@ -85,6 +90,29 @@ export function runFlagsService(bot: Bot) {
 
   bot.callbackQuery('flag_more', async (ctx) => {
     await handlerFlagConnect(ctx);
+    await ctx.answerCallbackQuery();
+  });
+
+  bot.callbackQuery('flag_settings', async (ctx) => {
+    await reply(ctx, 'Сколько должно быть вариантов ответа?', {
+      inlineKeyboard: [
+        [
+          { text: '2', callback_data: 'flag_setting|2' },
+          { text: '3', callback_data: 'flag_setting|3' },
+          { text: '4', callback_data: 'flag_setting|4' },
+          { text: '5', callback_data: 'flag_setting|5' },
+          { text: '6', callback_data: 'flag_setting|6' },
+          { text: '7', callback_data: 'flag_setting|7' },
+          { text: '8', callback_data: 'flag_setting|8' },
+        ],
+      ],
+    });
+    await ctx.answerCallbackQuery();
+  });
+
+  bot.callbackQuery(/^flag_setting\|/, async (ctx) => {
+    const [_, newCount] = ctx.callbackQuery.data.split('|');
+    count = Number(newCount);
     await ctx.answerCallbackQuery();
   });
 }
