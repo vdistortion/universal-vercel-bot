@@ -1,11 +1,7 @@
 import { list } from './list';
 import images from './images.json';
-
-async function HttpClient<T, P = null>(url: string, params?: P): Promise<T> {
-  const search = params ? '?' + new URLSearchParams(params).toString() : '';
-  const response = await fetch(url + search);
-  return response.json();
-}
+import { http } from '../utils/http';
+import { pickRandom } from '../utils/pickRandom';
 
 export function getApiList() {
   interface IResultItem {
@@ -14,7 +10,7 @@ export function getApiList() {
     length: number;
   }
 
-  const randomIndex = Math.floor(Math.random() * list.length);
+  const randomIndex = pickRandom(list);
   const result: IResultItem = {
     text: list[randomIndex],
     number: randomIndex + 1,
@@ -32,7 +28,7 @@ export function getApiImages() {
     length: number;
   }
 
-  const randomIndex = Math.floor(Math.random() * images.length);
+  const randomIndex = pickRandom(images);
   const { name } = images[randomIndex];
   const result: IResultImage = {
     path: name,
@@ -57,7 +53,7 @@ export async function getApiCat() {
     height: number;
   }
 
-  const [data] = await HttpClient<IApiData[]>('https://api.thecatapi.com/v1/images/search');
+  const [data] = await http<IApiData[]>('https://api.thecatapi.com/v1/images/search');
   return data;
 }
 
@@ -79,7 +75,7 @@ export function getApiQuote() {
     lang: string;
   }
 
-  return HttpClient<IApiData, IApiParams>('https://api.forismatic.com/api/1.0/', {
+  return http<IApiData, IApiParams>('https://api.forismatic.com/api/1.0/', {
     method: 'getQuote',
     key: 457653,
     format: 'json',
@@ -98,7 +94,7 @@ export function getApiAdvice() {
     text: string;
   }
 
-  return HttpClient<IApiData>('https://fucking-great-advice.ru/api/random');
+  return http<IApiData>('https://fucking-great-advice.ru/api/random');
 }
 
 /**
@@ -128,23 +124,11 @@ export async function getApiWeather(apiKey: string, latitude: number, longitude:
     lang?: string;
   }
 
-  return HttpClient<IApiData, IApiParams>(`https://api.openweathermap.org/data/2.5/weather`, {
+  return http<IApiData, IApiParams>(`https://api.openweathermap.org/data/2.5/weather`, {
     lat: latitude,
     lon: longitude,
     appid: apiKey,
     units: 'metric',
     lang: 'ru',
   });
-}
-
-export function getApiCountries(path: string) {
-  interface ICountry {
-    name: {
-      en: string;
-      ru: string;
-    };
-    flag: string[];
-  }
-
-  return HttpClient<ICountry[]>(`${path}/countries.json`);
 }

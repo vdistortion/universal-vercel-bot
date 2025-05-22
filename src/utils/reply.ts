@@ -10,6 +10,7 @@ export const reply = (
   options?: {
     messageId?: number;
     parseMode?: ParseMode;
+    inlineKeyboard?: InlineKeyboardButton[][];
     keyboard?: KeyboardButton[][];
     removeKeyboard?: boolean;
   },
@@ -19,6 +20,11 @@ export const reply = (
       reply_parameters: { message_id: options.messageId },
     }),
     ...(options?.parseMode && { parse_mode: options.parseMode }),
+    ...(options?.inlineKeyboard && {
+      reply_markup: {
+        inline_keyboard: options.inlineKeyboard,
+      },
+    }),
     ...(options?.keyboard && {
       reply_markup: {
         keyboard: options.keyboard,

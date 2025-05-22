@@ -8,4 +8,4 @@ export { id } from './id';
 export { cat } from './cat';
 export { quote } from './quote';
 export { advice } from './advice';
-export { flagConnect } from './flag-connect';
+export { flag_connect } from './flag_connect';

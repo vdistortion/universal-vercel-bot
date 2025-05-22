@@ -1,7 +1,6 @@
 import {
   getApiAdvice,
   getApiCat,
-  getApiCountries,
   getApiImages,
   getApiList,
   getApiQuote,
@@ -54,34 +53,4 @@ ${tempIcon} _Температура_: ${answer.main.temp} ℃
 📈 _Давление_: ${answer.main.pressure} мм рт. ст.
 ${wind}
 `;
-}
-
-export { getApiCountries };
-
-export async function getCountries(path: string) {
-  function randomIndex(array: any[]): number {
-    return Math.floor(Math.random() * array.length);
-  }
-
-  const apiCountries = await getApiCountries(path);
-  type ICountry = (typeof apiCountries)[number];
-  const list: [number, ICountry][] = [];
-  const indexes: number[] = [];
-  const count = 4;
-  let correctAnswerIndex = -1;
-
-  while (indexes.length < count) {
-    const index = randomIndex(apiCountries);
-    if (!indexes.includes(index)) indexes.push(index);
-  }
-
-  indexes.forEach((index) => {
-    list.push([index, apiCountries[index]]);
-  });
-
-  correctAnswerIndex = randomIndex(list);
-  return {
-    list,
-    correctAnswerIndex,
-  };
 }
