@@ -21,7 +21,7 @@ export const greeting = () => async (ctx: Filter<Context, 'message:text'>) => {
   } else if (ctx.message.text === commands.quote.text) {
     message = await getQuote();
   } else {
-    message = `${ctx.from.first_name}, не понимаю тебя! 😈`;
+    message = `${ctx.from.first_name}, не понимаю тебя! 😈\nВозможно, кнопка не сработала.\nПопробуй отправить команду /start для обновления меню.`;
   }
 
   await reply(ctx, message, { messageId: ctx.message.message_id, parseMode: 'Markdown' });
