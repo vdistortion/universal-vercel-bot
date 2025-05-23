@@ -1,9 +1,9 @@
-import type { Bot } from 'grammy';
 import createDebug from 'debug';
+import { bot } from './bot';
 
 const debug = createDebug('bot:development');
 
-export const development = async (bot: Bot) => {
+export const development = async () => {
   const { username } = await bot.api.getMe();
 
   debug('Bot runs in development mode');

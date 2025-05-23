@@ -1,10 +1,11 @@
-import type { CommandContext, Context } from 'grammy';
+import type { CommandContext } from 'grammy';
 import createDebug from 'debug';
+import type { SessionContext } from '../core';
 import { handlerFlagConnect } from '../services/flagService';
 
 const debug = createDebug('bot:flag_connect_command');
 
-export const flag_connect = () => async (ctx: CommandContext<Context>) => {
+export const flag_connect = () => async (ctx: CommandContext<SessionContext>) => {
   debug('Triggered "flag_connect" command');
   await handlerFlagConnect(ctx);
 };

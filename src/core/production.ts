@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import { bot } from '../';
+import { bot } from './bot';
 import { VERCEL_PROJECT_PRODUCTION_URL } from '../utils/env';
 
 const debug = createDebug('bot:production');

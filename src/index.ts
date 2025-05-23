@@ -1,14 +1,11 @@
-import { Bot, GrammyError, HttpError, webhookCallback } from 'grammy';
+import { GrammyError, HttpError, webhookCallback } from 'grammy';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { commands, development, production } from './core';
+import { bot, commands, isDev, development, production } from './core';
 import { advice, cat, help, id, image, imp, item, quote, start, stop } from './commands';
 import { greeting, location, sticker } from './text';
-import { ALIASES, NODE_ENV, OPENWEATHERMAP_API_KEY, TELEGRAM_BOT_TOKEN } from './utils/env';
+import { ALIASES, OPENWEATHERMAP_API_KEY } from './utils/env';
 import { homepage } from '../package.json';
 import { runFlagsService } from './services/flagService';
-
-export const bot = new Bot(TELEGRAM_BOT_TOKEN!);
-const isDev = NODE_ENV !== 'production';
 
 bot.command(commands.start.command, start(JSON.parse(ALIASES!)));
 bot.command(commands.stop.command, stop());
@@ -21,7 +18,7 @@ bot.command(commands.advice.command, advice());
 bot.command('id', id());
 bot.command('imp', imp(setSpecification));
 
-runFlagsService(bot);
+runFlagsService();
 
 bot.on('message:location', location(OPENWEATHERMAP_API_KEY!));
 bot.on('message:sticker', sticker());
@@ -78,4 +75,4 @@ export const startVercel = async (req: VercelRequest, res: VercelResponse) => {
 };
 
 //dev mode
-isDev && development(bot);
+isDev && development();

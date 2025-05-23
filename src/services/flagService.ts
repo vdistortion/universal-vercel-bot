@@ -1,5 +1,4 @@
-import type { Bot, Context } from 'grammy';
-import { commands } from '../core';
+import { bot, commands, type SessionContext } from '../core';
 import { flag_connect } from '../commands';
 import { FLAG_CONNECT } from '../utils/env';
 import { http } from '../utils/http';
@@ -17,19 +16,18 @@ interface ICountry {
 
 const url = FLAG_CONNECT!;
 let countries: ICountry[] = [];
-let count = 4;
 
 async function getApiCountries() {
   if (!countries.length) countries = await http<ICountry[]>(`${url}/countries.json`);
   return countries;
 }
 
-export async function handlerFlagConnect(ctx: Context) {
+export async function handlerFlagConnect(ctx: SessionContext) {
   const apiCountries = await getApiCountries();
   const list: [number, ICountry][] = [];
   const indexes: number[] = [];
 
-  while (indexes.length < count) {
+  while (indexes.length < ctx.session.count) {
     const index = pickRandom(apiCountries);
     if (!indexes.includes(index)) indexes.push(index);
   }
@@ -42,14 +40,18 @@ export async function handlerFlagConnect(ctx: Context) {
   const [indexCountry, country] = list[randomIndex];
   const flag = url + '/images/flags/' + country.flag[0];
   const buttons = list.map(([index, { name }]) => ({
-    text: count > 1 ? name.ru : 'Показать ответ',
+    text: ctx.session.count > 1 ? name.ru : 'Показать ответ',
     callback_data: `flag_answer|${index}|${indexCountry}`,
   }));
 
   await replyWithPhoto(ctx, flag, 'Какая это страна?', chunk(buttons, 2));
 }
 
-async function callbackQueryCountries(countryIndex: number, correctCountryIndex: number) {
+async function callbackQueryCountries(
+  count: number,
+  countryIndex: number,
+  correctCountryIndex: number,
+) {
   const countries = await getApiCountries();
   const countryName: string = countries[countryIndex].name.ru;
   const correctCountryName: string = countries[correctCountryIndex].name.ru;
@@ -63,7 +65,7 @@ async function callbackQueryCountries(countryIndex: number, correctCountryIndex:
   return { answer };
 }
 
-export function runFlagsService(bot: Bot) {
+export function runFlagsService() {
   bot.command(commands.flags.command, flag_connect());
 
   bot.hears(commands.flags.text, handlerFlagConnect);
@@ -71,6 +73,7 @@ export function runFlagsService(bot: Bot) {
   bot.callbackQuery(/^flag_answer\|/, async (ctx) => {
     const [_, countryIndex, correctCountryIndex] = ctx.callbackQuery.data.split('|');
     const { answer } = await callbackQueryCountries(
+      ctx.session.count,
       Number(countryIndex),
       Number(correctCountryIndex),
     );
@@ -119,7 +122,7 @@ export function runFlagsService(bot: Bot) {
 
   bot.callbackQuery(/^flag_setting\|/, async (ctx) => {
     const [_, newCount] = ctx.callbackQuery.data.split('|');
-    count = Number(newCount);
+    ctx.session.count = Number(newCount);
     await ctx.answerCallbackQuery();
   });
 }
