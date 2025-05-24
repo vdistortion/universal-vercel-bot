@@ -1,7 +1,6 @@
 import { list } from './list';
-import images from './images.json';
-import { http } from '../utils/http';
-import { pickRandom } from '../utils/pickRandom';
+import { images } from './images';
+import { http, pickRandom } from '../utils';
 
 export function getApiList() {
   interface IResultItem {
@@ -29,7 +28,7 @@ export function getApiImages() {
   }
 
   const randomIndex = pickRandom(images);
-  const { name } = images[randomIndex];
+  const name = images[randomIndex];
   const result: IResultImage = {
     path: name,
     text: name.split('.')[0],

@@ -1,8 +1,7 @@
-import type { Context, Filter } from 'grammy';
+import type { Filter } from 'grammy';
 import createDebug from 'debug';
-import { getQuote, getAdvice, getCat } from '../api';
-import { commands } from '../core';
-import { reply, replyWithPhoto } from '../utils/reply';
+import { commands, type Context } from '../core';
+import { getAdvice, getCat, getQuote } from '../api';
 
 const debug = createDebug('bot:greeting_text');
 
@@ -13,7 +12,7 @@ export const greeting = () => async (ctx: Filter<Context, 'message:text'>) => {
 
   if (ctx.message.text === commands.cat.text) {
     const url = await getCat();
-    return replyWithPhoto(ctx, url);
+    return ctx.replyWithPhoto(url);
   }
 
   if (ctx.message.text === commands.advice.text) {
@@ -24,5 +23,8 @@ export const greeting = () => async (ctx: Filter<Context, 'message:text'>) => {
     message = `${ctx.from.first_name}, не понимаю тебя! 😈\nВозможно, кнопка не сработала.\nПопробуй отправить команду /start для обновления меню.`;
   }
 
-  await reply(ctx, message, { messageId: ctx.message.message_id, parseMode: 'Markdown' });
+  await ctx.reply(message, {
+    reply_parameters: { message_id: ctx.message.message_id },
+    parse_mode: 'Markdown',
+  });
 };

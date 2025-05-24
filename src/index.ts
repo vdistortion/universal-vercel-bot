@@ -1,11 +1,11 @@
 import { GrammyError, HttpError, webhookCallback } from 'grammy';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { bot, commands, isDev, development, production } from './core';
+import { bot, commands, development, isDev, production } from './core';
 import { advice, cat, help, id, image, imp, item, quote, start, stop } from './commands';
 import { greeting, location, sticker } from './text';
-import { ALIASES, OPENWEATHERMAP_API_KEY } from './utils/env';
-import { homepage } from '../package.json';
 import { runFlagsService } from './services/flagService';
+import { ALIASES, OPENWEATHERMAP_API_KEY } from './env';
+import { homepage } from '../package.json';
 
 bot.command(commands.start.command, start(JSON.parse(ALIASES!)));
 bot.command(commands.stop.command, stop());

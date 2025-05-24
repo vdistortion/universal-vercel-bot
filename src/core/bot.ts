@@ -1,5 +1,5 @@
 import { Bot, type Context, session, type SessionFlavor } from 'grammy';
-import { NODE_ENV, TELEGRAM_BOT_TOKEN } from '../utils/env';
+import { NODE_ENV, TELEGRAM_BOT_TOKEN } from '../env';
 
 interface SessionData {
   count: number;

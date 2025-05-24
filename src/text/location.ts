@@ -1,7 +1,7 @@
-import type { Context, Filter } from 'grammy';
+import type { Filter } from 'grammy';
 import createDebug from 'debug';
+import type { Context } from '../core';
 import { getWeather } from '../api';
-import { reply } from '../utils/reply';
 
 const debug = createDebug('bot:location_text');
 
@@ -11,5 +11,8 @@ export const location = (apiKey: string) => async (ctx: Filter<Context, 'message
   const { latitude, longitude } = ctx.message.location;
   const message = await getWeather(apiKey, latitude, longitude);
 
-  await reply(ctx, message, { messageId: ctx.message.message_id, parseMode: 'Markdown' });
+  await ctx.reply(message, {
+    reply_parameters: { message_id: ctx.message.message_id },
+    parse_mode: 'Markdown',
+  });
 };

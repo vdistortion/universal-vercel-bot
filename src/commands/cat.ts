@@ -1,6 +1,6 @@
-import type { CommandContext, Context } from 'grammy';
+import type { CommandContext } from 'grammy';
 import createDebug from 'debug';
-import { replyWithPhoto } from '../utils/reply';
+import type { Context } from '../core';
 import { getCat } from '../api';
 
 const debug = createDebug('bot:cat_command');
@@ -8,5 +8,5 @@ const debug = createDebug('bot:cat_command');
 export const cat = () => async (ctx: CommandContext<Context>) => {
   debug('Triggered "cat" command');
   const url = await getCat();
-  await replyWithPhoto(ctx, url);
+  await ctx.replyWithPhoto(url);
 };

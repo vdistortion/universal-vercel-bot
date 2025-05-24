@@ -1,10 +1,14 @@
-import type { CommandContext, Context } from 'grammy';
+import type { CommandContext } from 'grammy';
 import createDebug from 'debug';
-import { reply } from '../utils/reply';
+import type { Context } from '../core';
 
 const debug = createDebug('bot:stop_command');
 
 export const stop = () => async (ctx: CommandContext<Context>) => {
   debug('Triggered "stop" command');
-  await reply(ctx, 'Stopped', { removeKeyboard: true });
+  await ctx.reply('Stopped', {
+    reply_markup: {
+      remove_keyboard: true,
+    },
+  });
 };

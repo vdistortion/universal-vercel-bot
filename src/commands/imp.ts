@@ -1,6 +1,7 @@
-import type { CommandContext, Context } from 'grammy';
+import type { CommandContext } from 'grammy';
 import createDebug from 'debug';
-import { replyWithPhotoGroup } from '../utils/reply';
+import type { Context } from '../core';
+import { getPathToAssets } from '../utils';
 
 const debug = createDebug('bot:imp_command');
 
@@ -8,5 +9,15 @@ export const imp =
   (setSpecification: () => Promise<void>) => async (ctx: CommandContext<Context>) => {
     debug('Triggered "imp" command');
     await setSpecification();
-    await replyWithPhotoGroup(ctx, ['avatar.jpg', 'hellboy.jpg'], '@ImpTelegramBot');
+    await ctx.replyWithMediaGroup([
+      {
+        type: 'photo',
+        media: getPathToAssets('avatar.jpg'),
+        caption: '@ImpTelegramBot',
+      },
+      {
+        type: 'photo',
+        media: getPathToAssets('hellboy.jpg'),
+      },
+    ]);
   };

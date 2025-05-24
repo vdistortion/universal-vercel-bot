@@ -1,5 +1,6 @@
-import type { Context, Filter } from 'grammy';
+import type { Filter } from 'grammy';
 import createDebug from 'debug';
+import type { Context } from '../core';
 
 const debug = createDebug('bot:sticker_text');
 

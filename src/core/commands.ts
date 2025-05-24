@@ -11,5 +11,9 @@ export const commands: CommandsType = {
   flags: { command: 'flag_connect', text: '🌍 Флаги', description: 'Угадай страну 🚩' },
   quote: { command: 'quote', text: '💬 Крутая цитата', description: 'Умное слово 🗯' },
   advice: { command: 'advice', text: '🧨 Отмочить', description: '' },
-  location: { command: '', text: '', description: '📍 Погода по геолокации' },
+  location: {
+    command: '',
+    text: '📍 Погода по геолокации',
+    description: '📍 Погода по геолокации',
+  },
 };

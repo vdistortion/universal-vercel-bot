@@ -1,10 +1,7 @@
-import { bot, commands, type SessionContext } from '../core';
+import { bot, commands, type Context } from '../core';
 import { flag_connect } from '../commands';
-import { FLAG_CONNECT } from '../utils/env';
-import { http } from '../utils/http';
-import { pickRandom } from '../utils/pickRandom';
-import { chunk } from '../utils/chunkArray';
-import { reply, replyWithPhoto } from '../utils/reply';
+import { http, chunk, pickRandom } from '../utils';
+import { FLAG_CONNECT_MINI_APP } from '../env';
 
 interface ICountry {
   name: {
@@ -14,7 +11,7 @@ interface ICountry {
   flag: string[];
 }
 
-const url = FLAG_CONNECT!;
+const url = FLAG_CONNECT_MINI_APP!;
 let countries: ICountry[] = [];
 
 async function getApiCountries() {
@@ -22,7 +19,7 @@ async function getApiCountries() {
   return countries;
 }
 
-export async function handlerFlagConnect(ctx: SessionContext) {
+export async function handlerFlagConnect(ctx: Context) {
   const apiCountries = await getApiCountries();
   const list: [number, ICountry][] = [];
   const indexes: number[] = [];
@@ -44,7 +41,12 @@ export async function handlerFlagConnect(ctx: SessionContext) {
     callback_data: `flag_answer|${index}|${indexCountry}`,
   }));
 
-  await replyWithPhoto(ctx, flag, 'Какая это страна?', chunk(buttons, 2));
+  await ctx.replyWithPhoto(flag, {
+    caption: 'Какая это страна?',
+    reply_markup: {
+      inline_keyboard: chunk(buttons, 2),
+    },
+  });
 }
 
 async function callbackQueryCountries(
@@ -99,23 +101,25 @@ export function runFlagsService() {
   });
 
   bot.callbackQuery('flag_settings', async (ctx) => {
-    await reply(ctx, 'Сколько должно быть вариантов ответа?', {
-      inlineKeyboard: [
-        [
-          { text: '2', callback_data: 'flag_setting|2' },
-          { text: '3', callback_data: 'flag_setting|3' },
-          { text: '4', callback_data: 'flag_setting|4' },
-          { text: '5', callback_data: 'flag_setting|5' },
-          { text: '6', callback_data: 'flag_setting|6' },
-          { text: '7', callback_data: 'flag_setting|7' },
-          { text: '8', callback_data: 'flag_setting|8' },
-          { text: '9', callback_data: 'flag_setting|9' },
+    await ctx.reply('⚠️ Настройки нестабильны\nСколько должно быть вариантов ответа?', {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: '2', callback_data: 'flag_setting|2' },
+            { text: '3', callback_data: 'flag_setting|3' },
+            { text: '4', callback_data: 'flag_setting|4' },
+            { text: '5', callback_data: 'flag_setting|5' },
+            { text: '6', callback_data: 'flag_setting|6' },
+            { text: '7', callback_data: 'flag_setting|7' },
+            { text: '8', callback_data: 'flag_setting|8' },
+            { text: '9', callback_data: 'flag_setting|9' },
+          ],
+          [
+            { text: 'Без вариантов', callback_data: 'flag_setting|1' },
+            { text: '10', callback_data: 'flag_setting|10' },
+          ],
         ],
-        [
-          { text: '10', callback_data: 'flag_setting|10' },
-          { text: 'Без вариантов', callback_data: 'flag_setting|1' },
-        ],
-      ],
+      },
     });
     await ctx.answerCallbackQuery();
   });
