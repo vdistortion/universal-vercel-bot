@@ -134,7 +134,7 @@ export const ru: LangType = {
   description,
   help,
   unknownCommand,
-  defaultStartMessage: (title: string) => `Чат *${title}* подключен к системе.`,
+  defaultStartMessage: (title: string) => `Группа *${title}* подключена к системе.`,
   aliasStartMessage: (alias: string) => `Добро пожаловать, *${alias}*.`,
   privateStartMessage: (name: string) => `Будь как дома, *${name}*...`,
   stopCommand: 'Кнопки удалены... Всё забыто...',

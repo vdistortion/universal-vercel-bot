@@ -7,13 +7,27 @@ const locationButton: KeyboardButton = {
 };
 
 export const getKeyboard = (isPrivateChat?: boolean, advice?: boolean): ReplyKeyboardMarkup => {
+  const keyboard: KeyboardButton[][] =
+    isPrivateChat && advice
+      ? [
+          [commands.flags.text],
+          [commands.advice.text, commands.quote.text],
+          [locationButton, commands.cat.text],
+        ]
+      : advice
+        ? [
+            [commands.advice.text, commands.flags.text],
+            [commands.quote.text, commands.cat.text],
+          ]
+        : isPrivateChat
+          ? [
+              [commands.flags.text, commands.quote.text],
+              [locationButton, commands.cat.text],
+            ]
+          : [[commands.flags.text], [commands.quote.text, commands.cat.text]];
+
   return {
     resize_keyboard: true,
-    keyboard: [
-      advice
-        ? [commands.advice.text, commands.flags.text, commands.cat.text]
-        : [commands.flags.text, commands.cat.text],
-      isPrivateChat ? [locationButton, commands.quote.text] : [commands.quote.text],
-    ],
+    keyboard,
   };
 };
