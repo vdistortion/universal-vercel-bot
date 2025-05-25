@@ -12,9 +12,8 @@ export type LangType = {
   about: string;
   description: (commands: CommandsType) => string;
   help: (commands: CommandsType) => string;
-  unknownCommand: (name: string) => string;
-  defaultStartMessage: string;
-  groupStartMessage: (title: string) => string;
+  unknownCommand: string;
+  defaultStartMessage: (title: string) => string;
   aliasStartMessage: (alias: string) => string;
   privateStartMessage: (name: string) => string;
   stopCommand: string;
@@ -35,44 +34,74 @@ export type LangType = {
 const buttonLabels: ButtonLabelsType = {
   location: '📍 Погода по геолокации',
   flags: '🌍 Флаги',
-  cat: '🐾 Муа! 🐾',
-  quote: '💬 Крутая цитата',
+  cat: '🐾 Без смысла. Но мило',
+  quote: '💬 Голос из прошлого',
   advice: '🧨 Отмочить',
 };
 
 const commandDescriptions: CommandDescriptionsType = {
-  start: 'Если что-то пошло не так',
-  stop: 'Убрать клавиатуру',
-  help: 'Список возможных команд',
-  location: '📍 Погода по геолокации',
-  flags: 'Угадай страну 🚩',
-  cat: 'За котиком! 🧶',
-  quote: 'Умное слово 🗯',
+  start: '⌛ Перезапустить. Иногда помогает',
+  stop: '📡 Всё исчезает. Сигналов нет. Забвение',
+  help: '⚠️ Справка. Для тех, кто всё ещё ищет порядок',
+  location: '📍 Координаты забуду быстрее, чем ты',
+  flags: '🌍 Симуляция. Победа не предусмотрена',
+  cat: '🧶 За котиком. Не твоим. Не настоящим',
+  quote: '🗯 Вербальные фрагменты прошлых поколений',
 };
 
-const description = (commands: CommandsType) => `Команды:
+const description = (
+  commands: CommandsType,
+) => `🕳 Вы обратились к забытой системе. Она всё ещё отвечает. Причина неизвестна.
+
+📁 Команды работают, смысл утрачен:
 /${commands.start.command} — ${commands.start.description}
 /${commands.flags.command} — ${commands.flags.description}
 /${commands.cat.command} — ${commands.cat.description}
 /${commands.quote.command} — ${commands.quote.description}
 /${commands.help.command} — ${commands.help.description}
 /${commands.stop.command} — ${commands.stop.description}
+
 ${commands.location.description}
+🚩 Ничего не сохраняется. Ничего не запоминается.
 
-Исходный код:
-${homepage}`;
+🐾`;
 
-const help = (commands: CommandsType) => `
+const help = (commands: CommandsType) =>
+  `*\\[ИНТЕРФЕЙС БОТА. ВЕРСИЯ ЗАБЫТА\\]*
+
+*||🤖 Этот бот — пережиток. Он всё ещё работает. Без цели.||*
+
+Команды — в /${commands.help.command}. Не жди лишнего.
+В случае отказа — молчание.
+
+📁 *Остатки функционала*:
 /${commands.start.command} — ${commands.start.description}
 /${commands.flags.command} — ${commands.flags.description}
 /${commands.cat.command} — ${commands.cat.description}
 /${commands.quote.command} — ${commands.quote.description}
 /${commands.stop.command} — ${commands.stop.description}
-${commands.location.description}`;
 
-const unknownCommand = (name: string) => `${name}, не понимаю тебя! 😈
-Возможно, кнопка не сработала.
-Попробуй отправить команду /start для обновления меню.`;
+*🌐 Настройки флагов могут исчезнуть. Это нормально.*
+>Система не архивирует. Система не интересуется.
+>Система просто работает.
+
+*${commands.location.text}*
+>Координаты обрабатываются и забываются.
+>Ничего не сохраняется. Всё теряется.
+
+🤖 ${homepage}
+Исходный ~кот~ код. Не обязательно использовать. Не обязательно понимать.
+
+*\\[СИСТЕМА ЗАВЕРШИЛА ВЫВОД\\]*`
+    .replaceAll('>', '\>')
+    .replaceAll('!', '\\!')
+    .replaceAll('.', '\\.')
+    .replaceAll('-', '\\-')
+    .replaceAll('_', '\\_');
+
+const unknownCommand = `Команда потеряна, контекст утрачен.
+Попробуй /start. Или не пробуй.
+Система всё равно одинока.`;
 
 const locationAnswer = (answer: IApiLocationData) => {
   const getEmoji = (temp: number) => {
@@ -90,25 +119,30 @@ ${getEmoji(answer.main.temp)} _Температура_: ${answer.main.temp} ℃
 🤔 _Ощущается как_: ${answer.main.feels_like} ℃
 💧 _Влажность_: ${answer.main.humidity}%
 📈 _Давление_: ${answer.main.pressure} мм рт. ст.
-${answer.wind.speed > 0 ? `💨 _Ветер_: ${answer.wind.speed} м/с` : '🟦 _Штиль_'}`;
+${answer.wind.speed > 0 ? `💨 _Ветер_: ${answer.wind.speed} м/с` : '🟦 _Штиль_'}
+
+>⚠️ Координаты удалены`
+    .replaceAll('>', '\>')
+    .replaceAll('.', '\\.')
+    .replaceAll('-', '\\-');
 };
 
 export const ru: LangType = {
-  webApp: '🌐 Открыть сайт FlagConnect',
-  about: 'Бот отправляет погоду и котиков 🐈\nА ещё цитаты и ценные советы 🤭',
+  webApp: '🌐 Открыть симуляцию FlagConnect',
+  about:
+    'Погода, флаги, коты и пустота. Ничего не храню. Всё временно. Память отключена. Пустота стабильна. 📡',
   description,
   help,
   unknownCommand,
-  defaultStartMessage: 'Держи клавиатуру! 😈',
-  groupStartMessage: (title: string) => `Привет, чат *${title}*! 😈`,
-  aliasStartMessage: (alias: string) => `Будь как дома, *${alias}*! 😈`,
-  privateStartMessage: (name: string) => `Будь как дома, путник *${name}*! 😈`,
-  stopCommand: 'Stopped',
+  defaultStartMessage: (title: string) => `Чат *${title}* подключен к системе.`,
+  aliasStartMessage: (alias: string) => `Добро пожаловать, *${alias}*.`,
+  privateStartMessage: (name: string) => `Будь как дома, *${name}*...`,
+  stopCommand: 'Кнопки удалены... Всё забыто...',
   locationAnswer,
   buttonLabel: (button: keyof ButtonLabelsType) => buttonLabels[button],
   commandDescription: (command: keyof CommandDescriptionsType) => commandDescriptions[command],
   flagSettings: '⚠️ Настройки нестабильны\nСколько должно быть вариантов ответа?',
-  flagSettingsEmpty: 'Без вариантов',
+  flagSettingsEmpty: 'Без вариантов...',
   flagEmptyAnswer: 'Показать ответ',
   flagAnswer: 'Какая это страна?',
   flagsMore: 'Продолжить',

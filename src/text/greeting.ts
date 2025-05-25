@@ -9,7 +9,7 @@ const debug = createDebug('bot:greeting_text');
 export const greeting = () => async (ctx: Filter<Context, 'message:text'>) => {
   debug('Triggered "greeting" text command');
 
-  let message = '';
+  let message = getPhrase('unknownCommand');
 
   if (ctx.message.text === commands.cat.text) {
     try {
@@ -24,8 +24,6 @@ export const greeting = () => async (ctx: Filter<Context, 'message:text'>) => {
     message = await getAdvice();
   } else if (ctx.message.text === commands.quote.text) {
     message = await getQuote();
-  } else {
-    message = getPhrase('unknownCommand')(ctx.from.first_name);
   }
 
   await ctx.reply(message, {

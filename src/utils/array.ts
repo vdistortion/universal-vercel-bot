@@ -13,3 +13,7 @@ export function chunk<T = string>(array: T[], size = 1) {
   }
   return result;
 }
+
+export function shuffle<T = string>(array: T[]) {
+  array.sort(() => Math.random() - 0.5);
+}

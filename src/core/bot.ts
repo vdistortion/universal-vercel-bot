@@ -11,6 +11,8 @@ export const bot = new Bot<SessionContext>(TELEGRAM_BOT_TOKEN!);
 
 export const isDev = NODE_ENV !== 'production';
 
+export const botName = isDev ? '😈 LocalImpBot' : '😈 ImpBot 😈';
+
 bot.use(
   session({
     initial: () => ({ count: 4 }),

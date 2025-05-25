@@ -3,6 +3,7 @@ export { stop } from './stop';
 export { help } from './help';
 export { item } from './item';
 export { image } from './image';
+export { install } from './install';
 export { imp } from './imp';
 export { id } from './id';
 export { cat } from './cat';

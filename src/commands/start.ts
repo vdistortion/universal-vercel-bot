@@ -10,11 +10,9 @@ export const start = (aliases: Record<string, string>) => async (ctx: CommandCon
   debug('Triggered "start" command');
 
   const { type, title, first_name, username } = ctx.chat;
-  let message = getPhrase('defaultStartMessage');
+  let message = getPhrase('defaultStartMessage')(`${title}`);
 
-  if (['supergroup', 'group'].includes(type)) {
-    message = getPhrase('groupStartMessage')(`${title}`);
-  } else if (type === 'private') {
+  if (type === 'private') {
     const alias = aliases[String(username)];
     message = alias
       ? getPhrase('aliasStartMessage')(`${alias}`)

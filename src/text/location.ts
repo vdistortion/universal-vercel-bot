@@ -14,6 +14,6 @@ export const location = (apiKey: string) => async (ctx: Filter<Context, 'message
 
   await ctx.reply(getPhrase('locationAnswer')(answer), {
     reply_parameters: { message_id: ctx.message.message_id },
-    parse_mode: 'Markdown',
+    parse_mode: 'MarkdownV2',
   });
 };

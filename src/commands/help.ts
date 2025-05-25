@@ -19,5 +19,8 @@ export const help = (commands: CommandsType) => async (ctx: CommandContext<Conte
     reply_markup: {
       inline_keyboard: ctx.chat.type === 'private' ? [[webAppButton]] : [],
     },
+    parse_mode: 'MarkdownV2',
+    // @ts-ignore
+    disable_web_page_preview: true,
   });
 };
