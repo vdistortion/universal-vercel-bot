@@ -127,6 +127,7 @@ export function runFlagsService() {
   bot.callbackQuery(/^flag_setting\|/, async (ctx) => {
     const [_, newCount] = ctx.callbackQuery.data.split('|');
     ctx.session.count = Number(newCount);
+    await handlerFlagConnect(ctx);
     await ctx.answerCallbackQuery();
   });
 }
