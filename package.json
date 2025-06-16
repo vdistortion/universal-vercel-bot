@@ -6,6 +6,7 @@
   "main": "src/index.ts",
   "homepage": "https://github.com/vdistortion/imp-telegram-bot",
   "scripts": {
+    "prepare": "cp -n .env.example .env",
     "dev": "DEBUG=bot* dotenv -- nodemon -e ts -x ts-node src/index.ts",
     "build": "ncc build src/index.ts -o public -m",
     "format": "prettier . --write",

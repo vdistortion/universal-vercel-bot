@@ -4,7 +4,7 @@ ImpBot based on Node.js and [grammY](https://github.com/grammyjs/grammY) framewo
 
 ## Before you start
 
-First copy `.env.example` file to `.env` and fill in all necessary values.
+Fill in all necessary values.
 
 ```dotenv
 TELEGRAM_BOT_TOKEN="<YOUR_BOT_API_TOKEN>"
