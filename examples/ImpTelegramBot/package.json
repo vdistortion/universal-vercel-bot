@@ -18,7 +18,6 @@
     "bot"
   ],
   "author": "Valentin <valentin.distortion@gmail.com> (https://github.com/vdistortion)",
-  "license": "GPL",
   "dependencies": {
     "grammy": "^1.36.1"
   },

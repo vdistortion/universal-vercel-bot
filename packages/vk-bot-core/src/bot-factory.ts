@@ -1,0 +1,143 @@
+import { VKContext, VKUpdate, SessionData } from './types';
+import { createLoggerMiddleware } from './middleware';
+import { createErrorHandler } from './middleware';
+
+type UpdateHandler = (ctx: VKContext) => void | Promise<void>;
+
+export interface VKBotFactoryOptions {
+  token: string;
+  groupId: number;
+  secret?: string;
+  useLogger?: boolean;
+}
+
+interface LongPollResponse {
+  ts: number;
+  updates: VKUpdate[];
+}
+
+export class VKBot {
+  private token: string;
+  private groupId: number;
+  private secret?: string;
+  private ts: number = 0;
+  private handlers: Map<string, UpdateHandler[]> = new Map();
+  private isRunning = false;
+
+  constructor(options: VKBotFactoryOptions) {
+    this.token = options.token;
+    this.groupId = options.groupId;
+    this.secret = options.secret;
+  }
+
+  private async request(method: string, params: Record<string, unknown> = {}): Promise<unknown> {
+    const url = new URL(`https://api.vk.com/method/${method}`);
+    url.searchParams.set('access_token', this.token);
+    url.searchParams.set('v', '5.131');
+
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(key, String(value));
+    }
+
+    const response = await fetch(url.toString());
+    const data = (await response.json()) as { error?: unknown; response?: unknown };
+
+    if ('error' in data) {
+      throw new Error(JSON.stringify(data.error));
+    }
+
+    return data.response;
+  }
+
+  private async getLongPollServer(): Promise<{ server: string; key: string; ts: number }> {
+    const response = (await this.request('groups.getLongPollServer', {
+      group_id: this.groupId,
+    })) as { server: string; key: string; ts: number };
+
+    return response;
+  }
+
+  async start(): Promise<void> {
+    if (this.isRunning) return;
+    this.isRunning = true;
+
+    console.log(`[VK Bot] Starting... Group ID: ${this.groupId}`);
+
+    while (this.isRunning) {
+      try {
+        const { server, key, ts } = await this.getLongPollServer();
+        this.ts = ts;
+
+        const url = `${server}?act=a_check&key=${key}&ts=${this.ts}&wait=25&mode=2&version=10`;
+
+        const response = await fetch(url);
+        const data = (await response.json()) as LongPollResponse;
+
+        if (data.ts) {
+          this.ts = data.ts;
+        }
+
+        for (const update of data.updates ?? []) {
+          this.handleUpdate(update);
+        }
+      } catch (err) {
+        console.error('[VK Bot] Long poll error:', err);
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+    }
+  }
+
+  stop(): void {
+    this.isRunning = false;
+  }
+
+  private handleUpdate(update: VKUpdate): void {
+    // Проверка secret
+    if (this.secret && update.secret !== this.secret) {
+      console.warn('[VK Bot] Invalid secret');
+      return;
+    }
+
+    const ctx: VKContext = {
+      update,
+      message: update.object.message,
+      peerId: update.object.peer_id ?? update.object.message?.peer_id ?? 0,
+      userId: update.object.user_id ?? update.object.message?.from_id ?? 0,
+      text: update.object.message?.text ?? '',
+      payload: update.object.message?.payload ?? update.object.payload,
+      eventId: update.object.event_id,
+    };
+
+    // Обработчики
+    const handlers = this.handlers.get(update.type) ?? [];
+    for (const handler of handlers) {
+      handler(ctx);
+    }
+  }
+
+  on(event: string, handler: UpdateHandler): this {
+    const handlers = this.handlers.get(event) ?? [];
+    handlers.push(handler);
+    this.handlers.set(event, handlers);
+    return this;
+  }
+
+  async sendMessage(peerId: number, text: string, keyboard?: string): Promise<number> {
+    const params: Record<string, unknown> = {
+      peer_id: peerId,
+      message: text,
+      random_id: Date.now(),
+    };
+
+    if (keyboard) {
+      params.keyboard = keyboard;
+    }
+
+    const response = await this.request('messages.send', params);
+    return response as number;
+  }
+}
+
+export function createVKBot(options: VKBotFactoryOptions): VKBot {
+  return new VKBot(options);
+}

@@ -1,0 +1,23 @@
+{
+  "name": "imp-monorepo-bot",
+  "version": "1.0.0",
+  "description": "Monorepo for Telegram and VK bots, and Angular MiniApp",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier . --write"
+  },
+  "author": "Valentin <valentin.distortion@gmail.com> (https://github.com/vdistortion)",
+  "homepage": "https://github.com/vdistortion/imp-monorepo-bot",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "prettier": "3.5.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}
