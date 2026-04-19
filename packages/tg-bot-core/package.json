@@ -3,15 +3,19 @@
   "version": "1.0.0",
   "description": "Core library for building Telegram bots",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "tsc --noemit"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@scope/shared": "*",
     "grammy": "^1.42.0"

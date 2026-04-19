@@ -1,6 +1,5 @@
 import { VKContext, VKUpdate, SessionData } from './types';
-import { createLoggerMiddleware } from './middleware';
-import { createErrorHandler } from './middleware';
+import { createErrorHandler, createLoggerMiddleware } from './middleware';
 
 type UpdateHandler = (ctx: VKContext) => void | Promise<void>;
 
@@ -63,11 +62,11 @@ export class VKBot {
 
     console.log(`[VK Bot] Starting... Group ID: ${this.groupId}`);
 
+    let { server, key, ts } = await this.getLongPollServer();
+    this.ts = ts;
+
     while (this.isRunning) {
       try {
-        const { server, key, ts } = await this.getLongPollServer();
-        this.ts = ts;
-
         const url = `${server}?act=a_check&key=${key}&ts=${this.ts}&wait=25&mode=2&version=10`;
 
         const response = await fetch(url);
@@ -83,6 +82,12 @@ export class VKBot {
       } catch (err) {
         console.error('[VK Bot] Long poll error:', err);
         await new Promise((r) => setTimeout(r, 1000));
+        try {
+          ({ server, key, ts } = await this.getLongPollServer());
+          this.ts = ts;
+        } catch (reconnectErr) {
+          console.error('[VK Bot] Reconnect failed:', reconnectErr);
+        }
       }
     }
   }
@@ -106,6 +111,7 @@ export class VKBot {
       text: update.object.message?.text ?? '',
       payload: update.object.message?.payload ?? update.object.payload,
       eventId: update.object.event_id,
+      sendMessage: this.sendMessage.bind(this),
     };
 
     // Обработчики

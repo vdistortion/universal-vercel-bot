@@ -1,4 +1,4 @@
-export type LanguageCode = 'ru' | 'en'; // Пример
+export type LanguageCode = 'ru' | 'en';
 
 export interface PhraseCollection {
   [key: string]: string | ((...args: any[]) => string);

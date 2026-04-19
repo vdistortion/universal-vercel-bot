@@ -1,4 +1,4 @@
-import { BotContext } from '../types';
+import type { BotContext } from '../types';
 
 export interface CommandDefinition {
   command: string;

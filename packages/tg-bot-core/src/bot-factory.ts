@@ -1,7 +1,7 @@
 import { Bot, session } from 'grammy';
-import { BotContext, SessionData } from './types/index.js';
-import { loggerMiddleware } from './middleware/index.js';
-import { errorHandler } from './middleware/index.js';
+import { BotContext, SessionData } from './types';
+import { loggerMiddleware } from './middleware';
+import { errorHandler } from './middleware';
 
 export interface BotFactoryOptions {
   token: string;

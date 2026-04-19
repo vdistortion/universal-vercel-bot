@@ -1,4 +1,4 @@
-import { ThemeParams } from '../types';
+import type { ThemeParams } from '../types';
 
 declare global {
   interface Window {

@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Monorepo for Telegram and VK bots, and Angular MiniApp",
   "private": true,
-  "main": "index.js",
   "scripts": {
+    "build": "tsc --build",
+    "dev": "npm run build && tsx apps/universal-bot/src/index.ts",
+    "start": "node apps/universal-bot/dist/src/index.js",
     "format": "prettier . --write"
   },
   "author": "Valentin <valentin.distortion@gmail.com> (https://github.com/vdistortion)",
@@ -12,7 +14,7 @@
   "license": "Apache-2.0",
   "workspaces": [
     "packages/*",
-    "examples/*"
+    "apps/*"
   ],
   "devDependencies": {
     "@types/node": "^25.6.0",

@@ -4,7 +4,8 @@
     { "path": "./packages/shared" },
     { "path": "./packages/miniapp" },
     { "path": "./packages/tg-bot-core" },
-    { "path": "./packages/vk-bot-core" }
+    { "path": "./packages/vk-bot-core" },
+    { "path": "./apps/universal-bot" }
   ],
   "compilerOptions": {
     "target": "ES2022",

@@ -1,5 +1,5 @@
-import { Context as GrammyContext, SessionFlavor } from 'grammy';
-// import { Database } from '@scope/shared'; // Представим, что мы добавим типы для DB позже
+import type { Context as GrammyContext, SessionFlavor } from 'grammy';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface SessionData {
   // Здесь будут общие данные сессии, например:
@@ -10,5 +10,5 @@ export interface SessionData {
 // Расширяем контекст gramgrammy
 export interface BotContext extends GrammyContext, SessionFlavor<SessionData> {
   // Можно добавить свои поля
-  // db: Database;
+  db: SupabaseClient;
 }

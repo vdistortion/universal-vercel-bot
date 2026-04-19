@@ -66,6 +66,7 @@ export interface VKContext {
   peerId: number;
   userId: number;
   text: string;
+  sendMessage: (peerId: number, text: string, keyboard?: string) => Promise<unknown>;
   payload?: string;
   eventId?: string;
 }

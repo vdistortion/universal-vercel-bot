@@ -1,5 +1,3 @@
-import { WebAppInitData } from '../types';
-
 export function initMiniApp(): void {
   const webApp = window.Telegram?.WebApp;
 
