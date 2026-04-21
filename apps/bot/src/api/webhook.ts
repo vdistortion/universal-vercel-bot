@@ -15,14 +15,16 @@ const sendVKMessage: VKSendMessageFunction = async (peerId, text, keyboard) => {
   url.searchParams.set('v', '5.131');
   url.searchParams.set('peer_id', String(peerId));
   url.searchParams.set('message', text);
-  url.searchParams.set('random_id', String(Date.now())); // Уникальный ID для каждого сообщения
+  url.searchParams.set('random_id', String(Date.now()));
 
   if (keyboard) {
     url.searchParams.set('keyboard', keyboard);
   }
 
+  const fetchOptions: RequestInit = {};
+
   try {
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), fetchOptions);
     const data = await response.json();
     if (data.error) {
       console.error('Error sending VK message:', data.error);
@@ -38,10 +40,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   const platform = req.query.platform;
 
   if (platform === 'tg' && process.env.TELEGRAM_BOT_TOKEN) {
-    const bot = createBot({ token: process.env.TELEGRAM_BOT_TOKEN });
-    // Здесь можно добавить middleware, если они нужны для вебхуков
-    const handler = webhookCallback(bot, 'http');
-    return handler(req, res);
+    try {
+      const bot = createBot({
+        token: process.env.TELEGRAM_BOT_TOKEN,
+      });
+      const handler = webhookCallback(bot, 'https');
+      return handler(req, res);
+    } catch (error) {
+      console.error('❌ Error processing Telegram webhook:', error);
+      return res.status(500).send('Telegram webhook processing failed');
+    }
   }
 
   if (platform === 'vk' && process.env.VK_TOKEN && process.env.VK_GROUP_ID) {
@@ -51,22 +59,26 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       return res.status(200).send(process.env.VK_CONFIRMATION);
     }
 
-    const vkProcessor = createVKWebhookProcessor(
-      {
-        token: process.env.VK_TOKEN,
-        groupId: Number(process.env.VK_GROUP_ID),
-        secret: process.env.VK_SECRET,
-      },
-      sendVKMessage,
-    );
+    try {
+      const vkProcessor = createVKWebhookProcessor(
+        {
+          token: process.env.VK_TOKEN,
+          groupId: Number(process.env.VK_GROUP_ID),
+          secret: process.env.VK_SECRET,
+        },
+        sendVKMessage,
+      );
 
-    vkProcessor.on('message_new', async (ctx) => {
-      await ctx.sendMessage(ctx.peerId, 'Привет из ВК (через вебхук)! Я тоже на общем ядре.');
-      // Здесь можно добавить более сложную логику, например, обработку команд
-    });
+      vkProcessor.on('message_new', async (ctx) => {
+        await ctx.sendMessage(ctx.peerId, 'Привет из ВК (через вебхук)! Я тоже на общем ядре.');
+      });
 
-    await vkProcessor.processUpdate(body);
-    return res.status(200).send('ok');
+      await vkProcessor.processUpdate(body);
+      return res.status(200).send('ok');
+    } catch (error) {
+      console.error('❌ Error processing VK webhook:', error);
+      return res.status(500).send('VK webhook processing failed');
+    }
   }
 
   res.status(404).send('Platform not supported or token missing');

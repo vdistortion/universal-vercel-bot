@@ -1,5 +1,4 @@
-import { VKContext, VKUpdate, SessionData } from './types';
-import { createErrorHandler, createLoggerMiddleware } from './middleware';
+import type { VKContext, VKUpdate } from './types';
 
 type UpdateHandler = (ctx: VKContext) => void | Promise<void>;
 
@@ -8,6 +7,7 @@ export interface VKBotFactoryOptions {
   groupId: number;
   secret?: string;
   useLogger?: boolean;
+  proxyUrl?: string;
 }
 
 interface LongPollResponse {
@@ -38,7 +38,8 @@ export class VKBot {
       url.searchParams.set(key, String(value));
     }
 
-    const response = await fetch(url.toString());
+    const fetchOptions: RequestInit = {};
+    const response = await fetch(url.toString(), fetchOptions);
     const data = (await response.json()) as { error?: unknown; response?: unknown };
 
     if ('error' in data) {
@@ -69,7 +70,8 @@ export class VKBot {
       try {
         const url = `${server}?act=a_check&key=${key}&ts=${this.ts}&wait=25&mode=2&version=10`;
 
-        const response = await fetch(url);
+        const fetchOptions: RequestInit = {};
+        const response = await fetch(url, fetchOptions);
         const data = (await response.json()) as LongPollResponse;
 
         if (data.ts) {

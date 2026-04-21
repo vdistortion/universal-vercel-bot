@@ -1,12 +1,12 @@
 import { Bot, session } from 'grammy';
-import { BotContext, SessionData } from './types';
-import { loggerMiddleware } from './middleware';
-import { errorHandler } from './middleware';
+import { errorHandler, loggerMiddleware } from './middleware';
+import type { BotContext, SessionData } from './types';
 
 export interface BotFactoryOptions {
   token: string;
   useLogger?: boolean;
   useSession?: boolean;
+  proxyUrl?: string;
 }
 
 export function createBot(options: BotFactoryOptions): Bot<BotContext> {
