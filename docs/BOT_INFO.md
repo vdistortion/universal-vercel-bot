@@ -1,12 +1,17 @@
+
 # 😈 ImpBot 😈
 
 @ImpUniversalBot
+
+![Bot Preview](./bot-avatar.jpg)
 
 ## Short Description
 
 Коты и пустота. Ничего не храню. Всё временно. Память отключена. Пустота стабильна. 📡
 
 ## Description
+
+![Bot Preview](./bot-preview.jpg)
 
 🕳 Вы обратились к забытой системе. Она всё ещё отвечает. Причина неизвестна.
 

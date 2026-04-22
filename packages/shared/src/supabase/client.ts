@@ -1,9 +1,9 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-let _supabase: SupabaseClient | null = null;
+let client: SupabaseClient | null = null;
 
 export function getSupabaseClient(): SupabaseClient {
-  if (!_supabase) {
+  if (!client) {
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_KEY;
 
@@ -12,7 +12,13 @@ export function getSupabaseClient(): SupabaseClient {
         `Supabase env vars missing! SUPABASE_URL=${url}, SUPABASE_KEY=${key ? '***' : 'undefined'}`,
       );
     }
-    _supabase = createClient(url, key);
+
+    client = createClient(url, key, {
+      auth: {
+        persistSession: false, // На сервере сессия не нужна
+        autoRefreshToken: false,
+      },
+    });
   }
-  return _supabase;
+  return client;
 }

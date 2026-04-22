@@ -2,6 +2,7 @@ import { webhookCallback } from 'grammy';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createBot } from '@scope/tg-bot-core';
 import { createVKWebhookProcessor, VKSendMessageFunction } from '@scope/vk-bot-core';
+import { VERCEL_PROJECT_PRODUCTION_URL } from '../env';
 
 const sendVKMessage: VKSendMessageFunction = async (peerId, text, keyboard) => {
   const token = process.env.VK_TOKEN;
@@ -36,6 +37,28 @@ const sendVKMessage: VKSendMessageFunction = async (peerId, text, keyboard) => {
   }
 };
 
+async function ensureTelegramWebhookSet(botInstance: ReturnType<typeof createBot>) {
+  if (!VERCEL_PROJECT_PRODUCTION_URL) {
+    console.warn('VERCEL_PROJECT_PRODUCTION_URL is not set, skipping Telegram webhook setup.');
+    return;
+  }
+  const webhookUrl = `https://${VERCEL_PROJECT_PRODUCTION_URL}/api/webhook?platform=tg`;
+  try {
+    const webhookInfo = await botInstance.api.getWebhookInfo();
+    if (webhookInfo.url !== webhookUrl) {
+      console.log(`[Telegram] Deleting old webhook: ${webhookInfo.url}`);
+      await botInstance.api.deleteWebhook();
+      console.log(`[Telegram] Setting new webhook: ${webhookUrl}`);
+      await botInstance.api.setWebhook(webhookUrl);
+      console.log('[Telegram] Webhook set successfully.');
+    } else {
+      console.log('[Telegram] Webhook is already up to date.');
+    }
+  } catch (error) {
+    console.error('❌ Failed to set Telegram webhook:', error);
+  }
+}
+
 export default async (req: VercelRequest, res: VercelResponse) => {
   const platform = req.query.platform;
 
@@ -44,6 +67,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       const bot = createBot({
         token: process.env.TELEGRAM_BOT_TOKEN,
       });
+      await ensureTelegramWebhookSet(bot);
       const handler = webhookCallback(bot, 'https');
       return handler(req, res);
     } catch (error) {

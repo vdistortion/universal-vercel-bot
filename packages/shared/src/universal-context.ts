@@ -9,6 +9,7 @@ export interface UniversalReplyOptions {
   // VK-специфичная клавиатура (JSON строка)
   vkKeyboard?: string;
   // Другие универсальные опции могут быть добавлены здесь, если нужны
+  remove_keyboard?: boolean;
 }
 
 export interface UniversalContext {
@@ -18,6 +19,7 @@ export interface UniversalContext {
   text: string;
   isAdmin: boolean;
   db?: SupabaseClient;
-  reply: (text: string, extra?: UniversalReplyOptions) => Promise<void>; // Обновлено
+  reply: (text: string, extra?: UniversalReplyOptions) => Promise<void>;
   replyWithFile?: (buffer: Buffer, filename: string, caption?: string) => Promise<void>;
+  replyWithPhoto?: (photoUrl: string, caption?: string) => Promise<void>;
 }

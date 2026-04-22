@@ -1,14 +1,10 @@
-import type { UniversalContext, UniversalReplyOptions } from '@scope/shared';
-import type { ReplyKeyboardRemove } from 'grammy/types';
+import type { UniversalContext } from '@scope/shared';
+import { removeUser } from '@scope/shared';
 
 export async function stopCommand(ctx: UniversalContext): Promise<void> {
-  const replyOptions: UniversalReplyOptions = {};
+  await removeUser(ctx.platform, ctx.userId);
 
-  if (ctx.platform === 'telegram') {
-    replyOptions.telegramReplyMarkup = { remove_keyboard: true } as ReplyKeyboardRemove;
-  } else if (ctx.platform === 'vk') {
-    replyOptions.vkKeyboard = JSON.stringify({ buttons: [] }); // Пустая клавиатура для VK
-  }
-
-  await ctx.reply('Бот остановлен. Чтобы запустить снова, используйте /start.', replyOptions);
+  await ctx.reply('👋 Пока! Если что — /start чтобы вернуться.', {
+    remove_keyboard: true,
+  });
 }

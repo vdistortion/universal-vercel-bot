@@ -1,11 +1,13 @@
 import type { UniversalContext, UniversalReplyOptions } from '@scope/shared';
-import { createUniversalKeyboard, createVKKeyboard } from '@scope/shared';
+import { addUser, createUniversalKeyboard, createVKKeyboard } from '@scope/shared';
 import { createTelegramKeyboard } from '@scope/tg-bot-core';
 
 export async function startCommand(
   ctx: UniversalContext,
   fullMenu: boolean = false,
 ): Promise<void> {
+  await addUser(ctx.platform, ctx.userId); // Добавляем/обновляем пользователя
+
   const universalKeyboard = createUniversalKeyboard(ctx.platform, fullMenu);
   const replyOptions: UniversalReplyOptions = {};
 

@@ -1,3 +1,4 @@
+// imp-monorepo-bot/apps/bot/src/commands/backup_db.ts
 import type { UniversalContext } from '@scope/shared';
 import { escapeMarkdownV2 } from '../utils/markdown';
 
@@ -19,25 +20,34 @@ export async function backupDbCommand(ctx: UniversalContext): Promise<void> {
   }
 
   try {
-    await ctx.reply('⏳ Запускаю создание бэкапа...');
-    const { data, error } = await ctx.db.from('bot_content').select('*');
-    if (error) throw error;
+    await ctx.reply('⏳ Запускаю создание бэкапа всех таблиц...');
 
-    if (!data || data.length === 0) {
-      await ctx.reply('База данных `bot_content` пуста.');
-      return;
+    const backupData: Record<string, any[]> = {};
+    const tablesToBackup = ['bot_content', 'users']; // Список таблиц для бэкапа
+
+    for (const tableName of tablesToBackup) {
+      const { data, error } = await ctx.db.from(tableName).select('*');
+      if (error) {
+        console.error(`Ошибка при получении данных из таблицы ${tableName}:`, error);
+        throw new Error(`Не удалось получить данные из таблицы \`${tableName}\`: ${error.message}`);
+      }
+      backupData[tableName] = data || []; // Сохраняем данные (или пустой массив, если данных нет)
     }
 
-    const filename = `bot_content_backup_${new Date().toISOString()}.json`;
-    const buffer = Buffer.from(JSON.stringify(data, null, 2), 'utf-8');
+    const filename = `full_db_backup_${new Date().toISOString()}.json`;
+    const buffer = Buffer.from(JSON.stringify(backupData, null, 2), 'utf-8');
 
     // Здесь мы уверены, что ctx.replyWithFile существует
-    await ctx.replyWithFile(buffer, filename, escapeMarkdownV2('Вот ваш бэкап 💾'));
+    await ctx.replyWithFile(
+      buffer,
+      filename,
+      escapeMarkdownV2('Вот ваш полный бэкап базы данных 💾'),
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Неизвестная ошибка';
-    console.error('Ошибка при создании бэкапа базы данных:', err); // Логируем ошибку для отладки
+    console.error('Ошибка при создании полного бэкапа базы данных:', err); // Логируем ошибку для отладки
     await ctx.reply(
-      `❌ Произошла ошибка при создании бэкапа базы данных: ${escapeMarkdownV2(msg)}`,
+      `❌ Произошла ошибка при создании полного бэкапа базы данных: ${escapeMarkdownV2(msg)}`,
     );
   }
 }

@@ -41,6 +41,7 @@ if (TELEGRAM_BOT_TOKEN) {
           await ctx.reply(escapeMarkdownV2(text), {
             parse_mode: 'MarkdownV2',
             ...(extra?.telegramReplyMarkup && { reply_markup: extra.telegramReplyMarkup }),
+            ...(extra?.remove_keyboard && { reply_markup: { remove_keyboard: true } }),
           });
         },
         replyWithFile: async (buffer, filename, caption) => {
@@ -50,6 +51,12 @@ if (TELEGRAM_BOT_TOKEN) {
               ? { caption: escapeMarkdownV2(caption), parse_mode: 'MarkdownV2' }
               : { parse_mode: 'MarkdownV2' },
           );
+        },
+        replyWithPhoto: async (photoUrl, caption) => {
+          await ctx.replyWithPhoto(photoUrl, {
+            caption: caption ? escapeMarkdownV2(caption) : undefined,
+            parse_mode: 'MarkdownV2',
+          });
         },
       };
       (ctx as any).uctx = uctx;
