@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { webhookCallback } from 'grammy';
-import { createVKWebhookProcessor, VKSendMessageFunction } from '@scope/vk-bot-core';
-import { tgBot } from '../index';
+import { tgBot, vkBot } from '../';
 
 function getBot() {
   if (!tgBot) {
@@ -10,37 +9,6 @@ function getBot() {
 
   return { bot: tgBot, init: Promise.resolve() };
 }
-
-const sendVKMessage: VKSendMessageFunction = async (peerId, text, keyboard) => {
-  const token = process.env.VK_TOKEN;
-  if (!token) {
-    console.error('VK_TOKEN is not defined');
-    return null;
-  }
-
-  const url = new URL('https://api.vk.com/method/messages.send');
-  url.searchParams.set('access_token', token);
-  url.searchParams.set('v', '5.131');
-  url.searchParams.set('peer_id', String(peerId));
-  url.searchParams.set('message', text);
-  url.searchParams.set('random_id', String(Date.now()));
-
-  if (keyboard) {
-    url.searchParams.set('keyboard', keyboard);
-  }
-
-  try {
-    const response = await fetch(url.toString());
-    const data = await response.json();
-    if (data.error) {
-      console.error('VK send error:', data.error);
-    }
-    return data.response;
-  } catch (error) {
-    console.error('VK send failed:', error);
-    return null;
-  }
-};
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'POST') {
@@ -65,24 +33,17 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     }
 
     if (body.type) {
-      if (!process.env.VK_TOKEN || !process.env.VK_GROUP_ID) {
-        return res.status(500).send('VK env not set');
+      if (!vkBot) {
+        // Проверяем, инициализирован ли vkBot
+        return res.status(500).send('VK bot not initialized');
       }
 
       if (body.type === 'confirmation') {
         return res.status(200).send(process.env.VK_CONFIRMATION ?? '');
       }
 
-      const vkProcessor = createVKWebhookProcessor(
-        {
-          token: process.env.VK_TOKEN,
-          groupId: Number(process.env.VK_GROUP_ID),
-          secret: process.env.VK_SECRET,
-        },
-        sendVKMessage,
-      );
-
-      await vkProcessor.processUpdate(body);
+      // Используем глобальный vkBot для обработки обновления
+      await vkBot.processUpdate(body);
       return res.status(200).send('ok');
     }
 

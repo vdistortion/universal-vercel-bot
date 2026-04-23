@@ -1,6 +1,6 @@
 import { InputFile } from 'grammy';
 import { createBot, dbMiddleware } from '@scope/tg-bot-core';
-import { createVKBot, VKBot, VKContext } from '@scope/vk-bot-core';
+import { createVKBot, VKContext } from '@scope/vk-bot-core';
 import {
   getSupabaseClient,
   type UniversalContext,
@@ -23,6 +23,14 @@ import { escapeMarkdownV2 } from './utils/markdown';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_ID, VK_TOKEN, VK_GROUP_ID } from './env';
 
 export const tgBot = TELEGRAM_BOT_TOKEN ? createBot({ token: TELEGRAM_BOT_TOKEN }) : null;
+export const vkBot =
+  VK_TOKEN && VK_GROUP_ID
+    ? createVKBot({
+        token: VK_TOKEN,
+        groupId: Number(VK_GROUP_ID),
+        secret: process.env.VK_SECRET,
+      })
+    : null;
 
 // ─── Telegram Bot ────────────────────────────────────────────────────────────
 if (tgBot) {
@@ -142,12 +150,9 @@ if (tgBot) {
 }
 
 // ─── VK Bot ──────────────────────────────────────────────────────────────────
-if (VK_TOKEN && VK_GROUP_ID) {
+if (vkBot) {
+  // Используем глобальный vkBot
   try {
-    const vkBot: VKBot = createVKBot({
-      token: VK_TOKEN,
-      groupId: Number(VK_GROUP_ID),
-    });
     const db = getSupabaseClient();
 
     vkBot.on('message_new', async (ctx: VKContext) => {
@@ -249,8 +254,12 @@ if (VK_TOKEN && VK_GROUP_ID) {
       });
     });
 
-    vkBot.start();
-    console.log('🚀 VK bot started');
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+      vkBot.start();
+      console.log('🚀 VK bot started with long polling');
+    } else {
+      console.log('🚀 VK bot initialized (webhook mode)');
+    }
   } catch (error) {
     console.error('❌ Failed to start VK bot:', error);
     console.log('⚠️ VK is unavailable, continuing without it...');

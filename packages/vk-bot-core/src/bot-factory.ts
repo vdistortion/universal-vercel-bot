@@ -98,13 +98,16 @@ export class VKBot {
     this.isRunning = false;
   }
 
-  private handleUpdate(update: VKUpdate): void {
+  async processUpdate(update: VKUpdate): Promise<void> {
     // Проверка secret
     if (this.secret && update.secret !== this.secret) {
       console.warn('[VK Bot] Invalid secret');
       return;
     }
+    await this.handleUpdate(update);
+  }
 
+  private async handleUpdate(update: VKUpdate): Promise<void> {
     const ctx: VKContext = {
       update,
       message: update.object.message,
@@ -119,7 +122,7 @@ export class VKBot {
     // Обработчики
     const handlers = this.handlers.get(update.type) ?? [];
     for (const handler of handlers) {
-      handler(ctx);
+      await handler(ctx);
     }
   }
 
