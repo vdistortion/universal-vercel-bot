@@ -4,12 +4,6 @@ import { createBot } from '@scope/tg-bot-core';
 import { createVKWebhookProcessor, VKSendMessageFunction } from '@scope/vk-bot-core';
 import { VERCEL_PROJECT_PRODUCTION_URL } from '../env';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 const sendVKMessage: VKSendMessageFunction = async (peerId, text, keyboard) => {
   const token = process.env.VK_TOKEN;
   if (!token) {
