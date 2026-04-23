@@ -8,3 +8,6 @@ export { adviceCommand } from './advice.js';
 export { randomCommand } from './random.js';
 export { contentCommand } from './content.js';
 export { stopCommand } from './stop.js';
+export { helpCommand } from './help.js';
+export { listUsersCommand } from './list_users.js';
+export { linkBotCommand } from './link_bot.js';

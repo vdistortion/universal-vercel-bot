@@ -28,11 +28,32 @@ export function createUniversalKeyboard(
     ]);
   }
 
-  // Добавим кнопки /id и /stop, они всегда доступны
-  keyboard.push([
-    { label: 'Мой ID 🆔', command: '/id' },
-    { label: 'Стоп 🛑', command: '/stop' },
-  ]);
+  // Кнопка настроек
+  keyboard.push([{ label: 'Настройки ⚙️', command: '/settings' }]);
+
+  return keyboard;
+}
+
+export function createUniversalSettingsKeyboard(
+  platform: Platform,
+  isAdmin: boolean,
+): UniversalKeyboard[][] {
+  const keyboard: UniversalKeyboard[][] = [
+    [{ label: 'Мой ID 🆔', command: '/id' }],
+    [{ label: 'Справка ❓', command: '/help' }],
+    [{ label: 'Другой бот 🔗', command: '/link_bot' }],
+    [{ label: 'Стоп 🛑', command: '/stop' }],
+  ];
+
+  if (isAdmin) {
+    if (platform === 'telegram') {
+      keyboard.push([{ label: 'Бэкап БД 💾', command: '/backupdb' }]);
+    }
+    keyboard.push([{ label: 'Список пользователей 👥', command: '/list_users' }]);
+  }
+
+  // Кнопка "Назад"
+  keyboard.push([{ label: '◀️ Назад', command: '/start' }]);
 
   return keyboard;
 }

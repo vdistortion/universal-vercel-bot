@@ -23,6 +23,16 @@
     "packages/*",
     "apps/*"
   ],
+  "keywords": [
+    "telegram-bot",
+    "vk-bot",
+    "monorepo",
+    "typescript",
+    "boilerplate",
+    "grammy",
+    "vercel",
+    "supabase"
+  ],
   "devDependencies": {
     "@types/debug": "^4.1.13",
     "@types/node": "^25.6.0",
