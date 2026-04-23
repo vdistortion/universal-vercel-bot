@@ -1,11 +1,7 @@
-import { webhookCallback } from 'grammy';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createBot } from '@scope/tg-bot-core';
 import { createVKWebhookProcessor, VKSendMessageFunction } from '@scope/vk-bot-core';
 
-// =========================
-// 🤖 TELEGRAM (singleton)
-// =========================
 let botInstance: ReturnType<typeof createBot> | null = null;
 
 function getBot() {
@@ -67,7 +63,15 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
     if (body.update_id) {
       const bot = getBot();
-      return webhookCallback(bot, 'https')(req, res);
+
+      try {
+        await bot.handleUpdate(body); // 💥 ВАЖНО
+
+        return res.status(200).send('ok');
+      } catch (e) {
+        console.error('Telegram handleUpdate error:', e);
+        return res.status(500).send('tg error');
+      }
     }
 
     if (body.type) {
