@@ -35,7 +35,7 @@ export async function randomCommand(ctx: UniversalContext): Promise<void> {
 
     const imageUrl = randomItem.image_url ? getImageUrl(randomItem.image_url) : null;
     const isTg = ctx.platform === 'telegram';
-    const counter = `\n\nВсего элементов: ${randomIndex + 1}/${allContent.length}`;
+    const counter = `\n\n${randomIndex + 1}/${allContent.length}`;
 
     // Если есть картинка и есть метод replyWithPhoto - отправляем фото
     if (imageUrl && ctx.replyWithPhoto) {

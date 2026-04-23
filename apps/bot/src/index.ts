@@ -1,11 +1,12 @@
 import { InputFile } from 'grammy';
-import { createBot, dbMiddleware } from '@scope/tg-bot-core';
+import { createBot, createTelegramKeyboard, dbMiddleware } from '@scope/tg-bot-core';
 import { createVKBot, VKContext } from '@scope/vk-bot-core';
 import {
   getSupabaseClient,
   type UniversalContext,
   createUniversalKeyboard,
   createVKKeyboard,
+  createUniversalSettingsKeyboard,
   userExists,
 } from '@scope/shared';
 import {
@@ -19,9 +20,12 @@ import {
   randomCommand,
   contentCommand,
   stopCommand,
+  helpCommand,
+  listUsersCommand,
+  linkBotCommand,
 } from './commands';
-import { escapeMarkdownV2 } from './utils/markdown';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_ID, VK_TOKEN, VK_GROUP_ID } from './env';
+import { escapeMarkdownV2 } from './utils/markdown';
 
 export const tgBot = TELEGRAM_BOT_TOKEN ? createBot({ token: TELEGRAM_BOT_TOKEN }) : null;
 export const vkBot =
@@ -82,6 +86,12 @@ if (tgBot) {
 
       const uctx: UniversalContext = (ctx as any).uctx;
       if (!uctx) return next();
+
+      const exists = await userExists('telegram', uctx.userId);
+      if (!exists) {
+        return;
+      }
+
       return next();
     });
 
@@ -133,6 +143,26 @@ if (tgBot) {
       await backupDbCommand((ctx as any).uctx);
     });
 
+    tgBot.command('help', async (ctx) => {
+      await helpCommand((ctx as any).uctx);
+    });
+
+    tgBot.command('list_users', async (ctx) => {
+      await listUsersCommand((ctx as any).uctx);
+    });
+
+    tgBot.command('link_bot', async (ctx) => {
+      await linkBotCommand((ctx as any).uctx);
+    });
+
+    tgBot.command('settings', async (ctx) => {
+      const uctx = (ctx as any).uctx;
+      const universalKeyboard = createUniversalSettingsKeyboard(uctx.platform, uctx.isAdmin);
+      await uctx.reply('⚙️ Меню настроек:', {
+        telegramReplyMarkup: createTelegramKeyboard(universalKeyboard),
+      });
+    });
+
     // Обработка текстовых кнопок Telegram
     tgBot.hears('Котики 🐾', async (ctx) => {
       await catCommand((ctx as any).uctx);
@@ -146,11 +176,33 @@ if (tgBot) {
     tgBot.hears('Рандом 🎲', async (ctx) => {
       await randomCommand((ctx as any).uctx);
     });
+    tgBot.hears('Настройки ⚙️', async (ctx) => {
+      const uctx = (ctx as any).uctx;
+      const universalKeyboard = createUniversalSettingsKeyboard(uctx.platform, uctx.isAdmin);
+      await uctx.reply('⚙️ Меню настроек:', {
+        telegramReplyMarkup: createTelegramKeyboard(universalKeyboard),
+      });
+    });
     tgBot.hears('Мой ID 🆔', async (ctx) => {
       await idCommand((ctx as any).uctx);
     });
+    tgBot.hears('Справка ❓', async (ctx) => {
+      await helpCommand((ctx as any).uctx);
+    });
+    tgBot.hears('Другой бот 🔗', async (ctx) => {
+      await linkBotCommand((ctx as any).uctx);
+    });
     tgBot.hears('Стоп 🛑', async (ctx) => {
       await stopCommand((ctx as any).uctx);
+    });
+    tgBot.hears('Бэкап БД 💾', async (ctx) => {
+      await backupDbCommand((ctx as any).uctx);
+    });
+    tgBot.hears('Список пользователей 👥', async (ctx) => {
+      await listUsersCommand((ctx as any).uctx);
+    });
+    tgBot.hears('◀️ Назад', async (ctx) => {
+      await startCommand((ctx as any).uctx);
     });
 
     if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
@@ -194,7 +246,6 @@ if (vkBot) {
         isAdmin: false,
         db,
         reply: async (msg, extra) => {
-          // Для VK, extra.vkKeyboard должен быть JSON строкой
           await vkBot.sendMessage(ctx.peerId, msg, extra?.vkKeyboard);
         },
         replyWithPhoto: async (photoUrl: string, caption?: string) => {
@@ -215,6 +266,13 @@ if (vkBot) {
       const isStart =
         commandToExecute === '/start' ||
         commandToExecute === '🚀 Запустить бота и показать основное меню';
+
+      if (!isStart) {
+        const exists = await userExists('vk', ctx.userId);
+        if (!exists) {
+          return;
+        }
+      }
 
       if (isStart) {
         await startCommand(uctx);
@@ -261,7 +319,30 @@ if (vkBot) {
         return;
       }
       if (commandToExecute === '/backupdb') {
-        await backupDbCommand(uctx);
+        await uctx.reply('❌ Команда /backupdb доступна только в Telegram.');
+        return;
+      }
+      if (commandToExecute === '/help' || commandToExecute === 'Справка ❓') {
+        await helpCommand(uctx);
+        return;
+      }
+      if (commandToExecute === '/list_users' || commandToExecute === 'Список пользователей 👥') {
+        await listUsersCommand(uctx);
+        return;
+      }
+      if (commandToExecute === '/link_bot' || commandToExecute === 'Другой бот 🔗') {
+        await linkBotCommand(uctx);
+        return;
+      }
+      if (commandToExecute === '/settings' || commandToExecute === 'Настройки ⚙️') {
+        const universalKeyboard = createUniversalSettingsKeyboard(uctx.platform, uctx.isAdmin);
+        await uctx.reply('⚙️ Меню настроек:', {
+          vkKeyboard: createVKKeyboard(universalKeyboard),
+        });
+        return;
+      }
+      if (commandToExecute === '◀️ Назад') {
+        await startCommand(uctx);
         return;
       }
 
