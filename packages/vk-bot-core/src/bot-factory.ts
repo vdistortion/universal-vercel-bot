@@ -130,7 +130,12 @@ export class VKBot {
     return this;
   }
 
-  async sendMessage(peerId: number, text: string, keyboard?: string): Promise<number> {
+  async sendMessage(
+    peerId: number,
+    text: string,
+    keyboard?: string,
+    attachment?: string,
+  ): Promise<number> {
     const params: Record<string, unknown> = {
       peer_id: peerId,
       message: text,
@@ -139,6 +144,10 @@ export class VKBot {
 
     if (keyboard) {
       params.keyboard = keyboard;
+    }
+
+    if (attachment) {
+      params.attachment = attachment;
     }
 
     const response = await this.request('messages.send', params);

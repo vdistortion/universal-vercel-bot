@@ -176,6 +176,17 @@ if (VK_TOKEN && VK_GROUP_ID) {
           // Для VK, extra.vkKeyboard должен быть JSON строкой
           await vkBot.sendMessage(ctx.peerId, msg, extra?.vkKeyboard);
         },
+        replyWithPhoto: async (photoUrl: string, caption?: string) => {
+          try {
+            await vkBot.sendMessage(ctx.peerId, caption || '', undefined, photoUrl);
+          } catch (error) {
+            console.error('VK replyWithPhoto error:', error);
+            await vkBot.sendMessage(
+              ctx.peerId,
+              `${caption || ''}\n\n[📷 Смотреть изображение](${photoUrl})`,
+            );
+          }
+        },
       };
 
       const commandToExecute = payloadCommand || text;

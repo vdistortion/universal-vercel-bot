@@ -82,12 +82,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         sendVKMessage,
       );
 
-      vkProcessor.on('message_new', async (ctx) => {
-        await ctx.sendMessage(ctx.peerId, 'Привет из ВК (через вебхук)!');
-      });
-
       await vkProcessor.processUpdate(body);
-
       return res.status(200).send('ok');
     }
 
