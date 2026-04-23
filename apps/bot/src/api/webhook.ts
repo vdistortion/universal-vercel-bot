@@ -107,3 +107,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
   res.status(404).send('Platform not supported or token missing');
 };
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};

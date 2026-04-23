@@ -1,7 +1,7 @@
 {
   "public": true,
   "functions": {
-    "dist/api/webhook.js": {
+    "api/webhook.js": {
       "memory": 1024,
       "maxDuration": 10
     }
