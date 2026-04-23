@@ -1,24 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createBot } from '@scope/tg-bot-core';
+import { webhookCallback } from 'grammy';
 import { createVKWebhookProcessor, VKSendMessageFunction } from '@scope/vk-bot-core';
-
-let botInstance: ReturnType<typeof createBot> | null = null;
-let botInitPromise: Promise<void> | null = null;
+import { tgBot } from '../index';
 
 function getBot() {
-  if (!botInstance) {
-    if (!process.env.TELEGRAM_BOT_TOKEN) {
-      throw new Error('TELEGRAM_BOT_TOKEN is not set');
-    }
-
-    botInstance = createBot({
-      token: process.env.TELEGRAM_BOT_TOKEN,
-    });
-
-    botInitPromise = botInstance.init();
+  if (!tgBot) {
+    throw new Error('Telegram bot instance is not initialized in index.ts');
   }
 
-  return { bot: botInstance, init: botInitPromise! };
+  return { bot: tgBot, init: Promise.resolve() };
 }
 
 const sendVKMessage: VKSendMessageFunction = async (peerId, text, keyboard) => {
@@ -65,16 +55,12 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     }
 
     if (body.update_id) {
-      const { bot, init } = getBot();
-
       try {
-        await init;
-        await bot.handleUpdate(body);
-
-        return res.status(200).send('ok');
-      } catch (e) {
-        console.error('Telegram handleUpdate error:', e);
-        return res.status(500).send('tg error');
+        const { bot } = getBot();
+        return await webhookCallback(bot, 'https')(req, res);
+      } catch (error) {
+        console.error('❌ Webhook error:', error);
+        return res.status(500).send('Internal error');
       }
     }
 

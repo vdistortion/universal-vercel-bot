@@ -22,10 +22,11 @@ import {
 import { escapeMarkdownV2 } from './utils/markdown';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_ID, VK_TOKEN, VK_GROUP_ID } from './env';
 
+export const tgBot = TELEGRAM_BOT_TOKEN ? createBot({ token: TELEGRAM_BOT_TOKEN }) : null;
+
 // ─── Telegram Bot ────────────────────────────────────────────────────────────
-if (TELEGRAM_BOT_TOKEN) {
+if (tgBot) {
   try {
-    const tgBot = createBot({ token: TELEGRAM_BOT_TOKEN });
     tgBot.use(dbMiddleware);
 
     tgBot.use(async (ctx, next) => {
@@ -128,8 +129,10 @@ if (TELEGRAM_BOT_TOKEN) {
       await stopCommand((ctx as any).uctx);
     });
 
-    tgBot.start();
-    console.log('🚀 Telegram bot started');
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+      tgBot.start();
+      console.log('🚀 Telegram bot started with long polling');
+    }
   } catch (error) {
     console.error('❌ Failed to start Telegram bot:', error);
     console.log('⚠️ Telegram is unavailable, continuing without it...');
