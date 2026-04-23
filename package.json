@@ -1,0 +1,33 @@
+{
+  "name": "imp-universal-bot",
+  "version": "1.0.0",
+  "description": "Monorepo for Telegram and VK bots, and Angular MiniApp",
+  "private": true,
+  "scripts": {
+    "prepare": "cp -n .env.example .env",
+    "prestart": "npm run build",
+    "build": "tsc --build",
+    "dev": "dotenv -- tsx apps/bot/src/index.ts",
+    "dev:tg": "dotenv -- env VK_TOKEN='' VK_GROUP_ID='' tsx apps/bot/src/index.ts",
+    "dev:vk": "dotenv -- env TELEGRAM_BOT_TOKEN='' tsx apps/bot/src/index.ts",
+    "start": "dotenv -- node apps/bot/dist/index.js",
+    "clean": "rm -rf node_modules package-lock.json dist && find . -name \"*.tsbuildinfo\" -delete && npm i",
+    "format": "prettier . --write"
+  },
+  "author": "Valentin <valentin.distortion@gmail.com> (https://github.com/vdistortion)",
+  "homepage": "https://github.com/vdistortion/imp-universal-bot",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "devDependencies": {
+    "@types/debug": "^4.1.13",
+    "@types/node": "^25.6.0",
+    "debug": "^4.4.3",
+    "dotenv-cli": "^11.0.0",
+    "prettier": "3.5.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}
