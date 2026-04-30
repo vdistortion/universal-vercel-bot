@@ -12,10 +12,14 @@ export interface UniversalReplyOptions {
 export interface UniversalContext {
   platform: Platform;
   userId: string;
+  dbUserId?: number; // Внутренний ID пользователя из таблицы `users`
   peerId: number; // chatId в TG, peerId в VK
   text: string;
   isAdmin: boolean;
   db?: SupabaseClient;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
   reply: (text: string, extra?: UniversalReplyOptions) => Promise<void>;
   replyWithFile?: (buffer: Buffer, filename: string, caption?: string) => Promise<void>;
   replyWithPhoto?: (photoUrl: string, caption?: string) => Promise<void>;

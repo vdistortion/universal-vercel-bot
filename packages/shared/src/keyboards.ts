@@ -4,8 +4,6 @@ export interface UniversalKeyboard {
   label: string;
   command?: string; // Для команд, которые отправляются как текст
   callbackData?: string; // Для inline-кнопок или payload в VK
-  requestLocation?: boolean; // Для кнопки запроса геолокации (только TG)
-  hide?: boolean; // Скрыть кнопку
 }
 
 export function createUniversalKeyboard(

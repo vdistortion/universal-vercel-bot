@@ -29,7 +29,7 @@ export class VKBot {
     this.secret = options.secret;
   }
 
-  private async request(method: string, params: Record<string, unknown> = {}): Promise<unknown> {
+  public async request(method: string, params: Record<string, unknown> = {}): Promise<unknown> {
     const url = new URL(`https://api.vk.com/method/${method}`);
     url.searchParams.set('access_token', this.token);
     url.searchParams.set('v', '5.131');

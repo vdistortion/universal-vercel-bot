@@ -14,7 +14,7 @@ export async function catCommand(ctx: UniversalContext): Promise<void> {
       } else {
         await ctx.reply(
           ctx.platform === 'telegram'
-            ? escapeMarkdownV2(`Мяу! 🐾\n\n[Смотреть](${catImageUrl})`)
+            ? escapeMarkdownV2(`Мяууу! 🐾\n\n[Смотреть](${catImageUrl})`)
             : `Мяу! 🐾\n\n[Смотреть](${catImageUrl})`,
         );
         return;

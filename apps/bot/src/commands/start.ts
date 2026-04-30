@@ -1,5 +1,4 @@
 import {
-  addUser,
   createUniversalKeyboard,
   createVKKeyboard,
   createUniversalSettingsKeyboard,
@@ -13,8 +12,6 @@ export async function startCommand(
   fullMenu: boolean = false,
   isSettingsMenu: boolean = false,
 ): Promise<void> {
-  await addUser(ctx.platform, ctx.userId);
-
   let universalKeyboard;
   let message: string;
 

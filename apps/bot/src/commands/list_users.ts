@@ -1,5 +1,6 @@
 import { getAllUsers, type UniversalContext } from '@scope/shared';
 import { escapeMarkdownV2 } from '@scope/tg-bot-core';
+import type { DbUser } from '@scope/shared';
 
 export async function listUsersCommand(ctx: UniversalContext): Promise<void> {
   if (!ctx.isAdmin) {
@@ -12,7 +13,7 @@ export async function listUsersCommand(ctx: UniversalContext): Promise<void> {
   }
 
   try {
-    const users = await getAllUsers();
+    const users: DbUser[] = await getAllUsers();
 
     if (users.length === 0) {
       await ctx.reply(
@@ -40,19 +41,37 @@ export async function listUsersCommand(ctx: UniversalContext): Promise<void> {
         hour12: true,
       });
 
-      let userLink = '';
-      if (user.platform === 'telegram') {
-        userLink = `tg://user?id=${user.platform_user_id}`;
-      } else if (user.platform === 'vk') {
-        userLink = `https://vk.com/id${user.platform_user_id}`;
+      let userIdentifier = 'Пользователь';
+      let userLink = '#';
+      let platformInfo = 'Неизвестно';
+      let platformUserIdDisplay: string | null = null;
+
+      if (user.tg_id) {
+        platformInfo = 'Telegram';
+        platformUserIdDisplay = user.tg_id;
+        userIdentifier = `Пользователь Telegram`;
+        userLink = `tg://user?id=${user.tg_id}`;
+      } else if (user.vk_id) {
+        platformInfo = 'ВКонтакте';
+        platformUserIdDisplay = user.vk_id;
+        userIdentifier = `Пользователь ВКонтакте`;
+        userLink = `https://vk.com/id${user.vk_id}`;
       }
+
+      const displayIdentifier =
+        ctx.platform === 'telegram' ? escapeMarkdownV2(userIdentifier) : userIdentifier;
+      const displayLink = ctx.platform === 'telegram' ? escapeMarkdownV2(userLink) : userLink;
+      const displayPlatformInfo =
+        ctx.platform === 'telegram' ? escapeMarkdownV2(platformInfo) : platformInfo;
+      const displayPlatformUserId =
+        ctx.platform === 'telegram'
+          ? escapeMarkdownV2(String(platformUserIdDisplay))
+          : platformUserIdDisplay;
 
       message +=
         ctx.platform === 'telegram'
-          ? escapeMarkdownV2(
-              `• ${userLink}\n  ID: ${user.platform_user_id}\n  Платформа: ${user.platform}\n  Зарегистрирован: ${formattedDate}\n\n`,
-            )
-          : `• ${userLink}\n  ID: ${user.platform_user_id}\n  Платформа: ${user.platform}\n  Зарегистрирован: ${formattedDate}\n\n`;
+          ? `• [${displayIdentifier}](${displayLink})\n  ID в БД: \`${user.id}\`\n  ID платформы: \`${displayPlatformUserId}\`\n  Платформа: ${displayPlatformInfo}\n  Зарегистрирован: ${escapeMarkdownV2(formattedDate)}\n\n`
+          : `• ${userIdentifier} (${userLink})\n  ID в БД: ${user.id}\n  ID платформы: ${platformUserIdDisplay}\n  Платформа: ${platformInfo}\n  Зарегистрирован: ${formattedDate}\n\n`;
     }
 
     await ctx.reply(message);
