@@ -7,6 +7,7 @@ export interface UniversalReplyOptions {
   telegramReplyMarkup?: ReplyKeyboardMarkup | InlineKeyboardMarkup | ReplyKeyboardRemove;
   vkKeyboard?: string;
   remove_keyboard?: boolean;
+  link_preview_options?: { is_disabled: boolean };
 }
 
 export interface UniversalContext {

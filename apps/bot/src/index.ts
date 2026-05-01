@@ -71,6 +71,9 @@ if (tgBot) {
             parse_mode: 'MarkdownV2',
             ...(extra?.telegramReplyMarkup && { reply_markup: extra.telegramReplyMarkup }),
             ...(extra?.remove_keyboard && { reply_markup: { remove_keyboard: true } }),
+            ...(extra?.link_preview_options && {
+              link_preview_options: extra.link_preview_options,
+            }),
           });
         },
         replyWithFile: async (buffer, filename, caption) => {
