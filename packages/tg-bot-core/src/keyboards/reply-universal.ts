@@ -10,11 +10,7 @@ export function createTelegramKeyboard(
 
   for (const row of universalKeyboard) {
     for (const btn of row) {
-      if (btn.requestLocation) {
-        keyboard.requestLocation(btn.label);
-      } else {
-        keyboard.text(btn.label);
-      }
+      keyboard.text(btn.label);
     }
     keyboard.row();
   }

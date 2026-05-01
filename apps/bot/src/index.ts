@@ -1,15 +1,20 @@
-// universal-vercel-bot/apps/bot/src/index.ts
 import { InputFile } from 'grammy';
-import { createBot, createTelegramKeyboard, dbMiddleware } from '@scope/tg-bot-core';
-import { createVKBot, VKContext } from '@scope/vk-bot-core';
 import {
   getSupabaseClient,
-  type UniversalContext,
   createUniversalKeyboard,
   createVKKeyboard,
   createUniversalSettingsKeyboard,
-  userExists,
+  findOrCreateUser,
+  logCommand,
+  type UniversalContext,
 } from '@scope/shared';
+import {
+  createBot,
+  createTelegramKeyboard,
+  dbMiddleware,
+  escapeMarkdownV2,
+} from '@scope/tg-bot-core';
+import { createVKBot, VKContext } from '@scope/vk-bot-core';
 import {
   startCommand,
   idCommand,
@@ -33,7 +38,6 @@ import {
   VK_ADMIN_ID,
   VK_SECRET,
 } from './env';
-import { escapeMarkdownV2 } from './utils/markdown';
 
 export const tgBot = TELEGRAM_BOT_TOKEN ? createBot({ token: TELEGRAM_BOT_TOKEN }) : null;
 export const vkBot =
@@ -53,17 +57,23 @@ if (tgBot) {
     tgBot.use(async (ctx, next) => {
       const uctx: UniversalContext = {
         platform: 'telegram',
-        userId: ctx.from?.id ?? 0,
+        userId: String(ctx.from?.id ?? 0),
         peerId: ctx.chat?.id ?? 0,
         text: ctx.message?.text ?? '',
         isAdmin: ctx.from?.id === Number(TELEGRAM_ADMIN_ID),
         db: ctx.db,
+        firstName: ctx.from?.first_name,
+        lastName: ctx.from?.last_name,
+        username: ctx.from?.username,
         reply: async (text, extra) => {
           // Для Telegram, extra.telegramReplyMarkup должен быть объектом
           await ctx.reply(text, {
             parse_mode: 'MarkdownV2',
             ...(extra?.telegramReplyMarkup && { reply_markup: extra.telegramReplyMarkup }),
             ...(extra?.remove_keyboard && { reply_markup: { remove_keyboard: true } }),
+            ...(extra?.link_preview_options && {
+              link_preview_options: extra.link_preview_options,
+            }),
           });
         },
         replyWithFile: async (buffer, filename, caption) => {
@@ -88,16 +98,40 @@ if (tgBot) {
       const text = ctx.message?.text ?? '';
       const isStart = text === '/start' || text.startsWith('/start ');
 
-      if (isStart) {
+      const uctx: UniversalContext = (ctx as any).uctx;
+      if (!uctx) {
+        console.error(`[TG Guard] uctx is undefined for user ${ctx.from?.id}. Skipping guard.`);
         return next();
       }
 
-      const uctx: UniversalContext = (ctx as any).uctx;
-      if (!uctx) return next();
+      const dbUser = await findOrCreateUser(uctx.platform, uctx.userId);
 
-      const exists = await userExists('telegram', uctx.userId);
-      if (!exists) {
+      if (!dbUser) {
+        console.error(`[TG Guard] Failed to find or create user ${uctx.userId}. Blocking.`);
         return;
+      }
+
+      // Прикрепляем внутренний ID пользователя к контексту для логирования
+      uctx.dbUserId = dbUser.id;
+
+      if (isStart) {
+        console.log(`[TG Guard] User ${uctx.userId} is calling /start. Proceeding.`);
+        await logCommand(dbUser.id, uctx.platform, '/start');
+        return next();
+      }
+
+      // Если пользователь не найден/создан (что не должно произойти, если findOrCreateUser отработал)
+      if (!dbUser) {
+        console.log(`[TG Guard] User ${uctx.userId} does not exist. Blocking command: ${text}`);
+        return;
+      }
+
+      console.log(`[TG Guard] User ${uctx.userId} exists. Command: ${text}`);
+      const command = text.split(' ')[0];
+      if (command.startsWith('/')) {
+        await logCommand(dbUser.id, uctx.platform, command);
+      } else {
+        await logCommand(dbUser.id, uctx.platform, text);
       }
 
       return next();
@@ -164,9 +198,12 @@ if (tgBot) {
     tgBot.command('settings', async (ctx) => {
       const uctx = (ctx as any).uctx;
       const universalKeyboard = createUniversalSettingsKeyboard(uctx.platform, uctx.isAdmin);
-      await uctx.reply('⚙️ Меню настроек:', {
-        telegramReplyMarkup: createTelegramKeyboard(universalKeyboard),
-      });
+      await uctx.reply(
+        uctx.platform === 'telegram' ? escapeMarkdownV2('⚙️ Меню настроек:') : '⚙️ Меню настроек:',
+        {
+          telegramReplyMarkup: createTelegramKeyboard(universalKeyboard),
+        },
+      );
     });
 
     // Обработка текстовых кнопок Telegram
@@ -185,9 +222,12 @@ if (tgBot) {
     tgBot.hears('Настройки ⚙️', async (ctx) => {
       const uctx = (ctx as any).uctx;
       const universalKeyboard = createUniversalSettingsKeyboard(uctx.platform, uctx.isAdmin);
-      await uctx.reply('⚙️ Меню настроек:', {
-        telegramReplyMarkup: createTelegramKeyboard(universalKeyboard),
-      });
+      await uctx.reply(
+        uctx.platform === 'telegram' ? escapeMarkdownV2('⚙️ Меню настроек:') : '⚙️ Меню настроек:',
+        {
+          telegramReplyMarkup: createTelegramKeyboard(universalKeyboard),
+        },
+      );
     });
     tgBot.hears('Мой ID 🆔', async (ctx) => {
       await idCommand((ctx as any).uctx);
@@ -225,7 +265,6 @@ if (tgBot) {
 
 // ─── VK Bot ──────────────────────────────────────────────────────────────────
 if (vkBot) {
-  // Используем глобальный vkBot
   try {
     const db = getSupabaseClient();
 
@@ -244,17 +283,45 @@ if (vkBot) {
         }
       }
 
+      // --- VK: Получаем данные пользователя ---
+      let vkFirstName: string | undefined;
+      let vkLastName: string | undefined;
+      let vkUsername: string | undefined;
+
+      try {
+        const usersGetResult = await vkBot.request('users.get', {
+          user_ids: ctx.userId,
+          fields: 'first_name,last_name,screen_name',
+        });
+        if (Array.isArray(usersGetResult) && usersGetResult.length > 0) {
+          const vkUser = usersGetResult[0] as {
+            first_name: string;
+            last_name?: string;
+            screen_name?: string;
+          };
+          vkFirstName = vkUser.first_name;
+          vkLastName = vkUser.last_name;
+          vkUsername = vkUser.screen_name;
+        }
+      } catch (vkErr) {
+        console.error(`[VK Bot] Error fetching user details for ${ctx.userId}:`, vkErr);
+      }
+      // --- Конец VK: Получаем данные пользователя ---
+
       const uctx: UniversalContext = {
         platform: 'vk',
-        userId: ctx.userId,
+        userId: String(ctx.userId),
         peerId: ctx.peerId,
         text,
         isAdmin: ctx.userId === Number(VK_ADMIN_ID),
         db,
+        firstName: vkFirstName,
+        lastName: vkLastName,
+        username: vkUsername,
         reply: async (msg, extra) => {
           let vkKeyboardJson: string | undefined;
           if (extra?.remove_keyboard) {
-            vkKeyboardJson = JSON.stringify({ buttons: [] }); // Явно убираем клавиатуру для VK
+            vkKeyboardJson = JSON.stringify({ buttons: [] });
           } else if (extra?.vkKeyboard) {
             vkKeyboardJson = extra.vkKeyboard;
           }
@@ -279,21 +346,35 @@ if (vkBot) {
         commandToExecute === '/start' ||
         commandToExecute === '🚀 Запустить бота и показать основное меню';
 
+      const dbUser = await findOrCreateUser(uctx.platform, uctx.userId);
+
+      if (!dbUser) {
+        console.error(`[VK Guard] Failed to find or create user ${uctx.userId}. Blocking.`);
+        return;
+      }
+
+      uctx.dbUserId = dbUser.id;
+
       if (!isStart) {
-        const exists = await userExists('vk', ctx.userId);
-        if (!exists) {
+        if (!dbUser) {
+          console.log(
+            `[VK Guard] User ${uctx.userId} does not exist. Blocking command: ${commandToExecute}`,
+          );
           return;
         }
       }
+
+      console.log(
+        `[VK Guard] User ${uctx.userId} exists: ${!!dbUser}. Command: ${commandToExecute}`,
+      );
+
+      await logCommand(dbUser.id, uctx.platform, commandToExecute);
 
       if (isStart) {
         await startCommand(uctx);
         return;
       }
-      if (
-        commandToExecute === '/full' ||
-        commandToExecute === '🌟 Открыть полное меню с дополнительными функциями'
-      ) {
+      if (commandToExecute === '/full') {
         await fullCommand(uctx);
         return;
       }
@@ -348,9 +429,14 @@ if (vkBot) {
       }
       if (commandToExecute === '/settings' || commandToExecute === 'Настройки ⚙️') {
         const universalKeyboard = createUniversalSettingsKeyboard(uctx.platform, uctx.isAdmin);
-        await uctx.reply('⚙️ Меню настроек:', {
-          vkKeyboard: createVKKeyboard(universalKeyboard),
-        });
+        await uctx.reply(
+          uctx.platform === 'telegram'
+            ? escapeMarkdownV2('⚙️ Меню настроек:')
+            : '⚙️ Меню настроек:',
+          {
+            vkKeyboard: createVKKeyboard(universalKeyboard),
+          },
+        );
         return;
       }
       if (commandToExecute === '◀️ Назад') {
