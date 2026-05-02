@@ -161,13 +161,15 @@ if (tgBot) {
       await randomCommand((ctx as any).uctx);
     });
 
-    tgBot.command('content', async (ctx) => {
-      const itemNumber = parseInt(ctx.match, 10);
+    tgBot.hears(/^\/content_(\d+)$/i, async (ctx) => {
+      const itemNumber = parseInt(ctx.match[1], 10); // ctx.match[1] будет захваченным числом
       const uctx = (ctx as any).uctx;
-      if (!isNaN(itemNumber)) {
+      if (!isNaN(itemNumber) && itemNumber > 0) {
         await contentCommand(uctx, itemNumber);
       } else {
-        await uctx.reply('Пожалуйста, укажите номер контента. Например: /content 1');
+        await uctx.reply(
+          escapeMarkdownV2('Пожалуйста, укажите корректный номер контента. Например: /content_1'),
+        );
       }
     });
 
@@ -394,12 +396,13 @@ if (vkBot) {
         await randomCommand(uctx);
         return;
       }
-      if (commandToExecute.startsWith('/content ')) {
-        const itemNumber = parseInt(commandToExecute.replace('/content ', ''), 10);
-        if (!isNaN(itemNumber)) {
+      const contentMatch = commandToExecute.match(/^\/content_(\d+)$/i);
+      if (contentMatch) {
+        const itemNumber = parseInt(contentMatch[1], 10);
+        if (!isNaN(itemNumber) && itemNumber > 0) {
           await contentCommand(uctx, itemNumber);
         } else {
-          await uctx.reply('Пожалуйста, укажите номер контента. Например: /content 1');
+          await uctx.reply('Пожалуйста, укажите корректный номер контента. Например: /content_1');
         }
         return;
       }
